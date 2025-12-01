@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aptima @ I/ITSEC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="background.mp4" type="video/mp4" />
+  </video>
+
+  <div class="overlay"></div>
+
+  <main class="kiosk">
+    <header class="kiosk-header">
+      <div class="header-main">
+        <div class="logo-wrap">
+          <img src="aptima-logo-reversed.png" alt="Aptima logo" class="logo" />
+        </div>
+        <div class="title-wrap">
+          <h1>APTIMA @ I/ITSEC</h1>
+          <p class="subtitle">Explore our events, solutions, and opportunities.</p>
+        </div>
+      </div>
+
+      <div class="featured-rotator">
+        <div class="featured-card-rotator">
+          <div class="featured-qr-inline">
+            <img src="qr-aptima-website.jpeg" alt="QR code to aptima.com" class="qr-img-small" />
+            <div class="qr-text-col">
+              <p class="qr-caption">Scan to learn more about Aptima.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="layout-container">
+      
+      <div class="tile-grid">
+        
+        <button class="tile" id="open-events">
+          <div class="tile-label">Daily Events</div>
+          <div class="tile-sub">See Aptima's 2025 Papers & Events</div>
+        </button>
+
+        <button class="tile tertiary" id="open-tech">
+          <div class="tile-label">Booth Demonstrations</div>
+          <div class="tile-sub">Explore our 7 featured solutions</div>
+        </button>
+
+        <button class="tile tertiary" id="open-intern">
+          <div class="tile-label">2026 Internship Opportunities</div>
+          <div class="tile-sub">Preview open roles for next summer</div>
+        </button>
+
+        <button class="tile tertiary" id="open-under40">
+          <div class="tile-label">NTSA Top Under 40 Awardees</div>
+          <div class="tile-sub">Celebrate Aptima’s I/ITSEC 2025 awardees</div>
+        </button>
+
+        <button class="tile tertiary" id="open-board">
+          <div class="tile-label">I/ITSEC Volunteers</div>
+          <div class="tile-sub">Recognizing Aptima’s commitment</div>
+        </button>
+
+      </div>
+
+      <div class="bottom-video-wrapper">
+        <video class="bottom-video" autoplay loop muted playsinline>
+          <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4">
+        </video>
+      </div>
+
+    </section>
+  </main>
+
+  <section class="panel" id="events-panel" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-header">
+        <h2>Daily Events</h2>
+        <button class="btn-ghost" data-close-panel="events-panel">Close ✕</button>
+      </div>
+      <div class="day-tabs" id="day-tabs"></div>
+      <div class="events-list" id="events-list"></div>
+      <div class="scroll-indicator hidden">Scroll for more ▼</div>
+    </div>
+  </section>
+
+  <section class="panel" id="tech-panel" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-header">
+        <h2>Booth Demonstrations</h2>
+        <button class="btn-ghost" data-close-panel="tech-panel">Close ✕</button>
+      </div>
+      <div class="events-list" id="tech-list"></div>
+      <div class="scroll-indicator hidden">Scroll for more ▼</div>
+    </div>
+  </section>
+
+  <section class="panel" id="board-panel" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-header">
+        <h2>I/ITSEC Volunteers</h2>
+        <button class="btn-ghost" data-close-panel="board-panel">Close ✕</button>
+      </div>
+      <div class="events-list" id="board-list"></div>
+      <div class="scroll-indicator hidden">Scroll for more ▼</div>
+    </div>
+  </section>
+
+  <section class="panel" id="intern-panel" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-header">
+        <h2>2026 Internship Opportunities</h2>
+        <button class="btn-ghost" data-close-panel="intern-panel">Close ✕</button>
+      </div>
+      <div class="career-banner">
+        <h3>NTSA Career Fair at I/ITSEC</h3>
+        <p><strong>13:00 – 16:00 • Room 210A</strong></p>
+        <p>Meet Bella Perault, People Operations Generalist, to learn about Aptima’s 2026 internships.</p>
+      </div>
+      <div class="events-list" id="intern-list"></div>
+      <div class="scroll-indicator hidden">Scroll for more ▼</div>
+    </div>
+  </section>
+
+  <section class="panel" id="under40-panel" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-header">
+        <h2>NTSA Top Under 40 Awardees</h2>
+        <button class="btn-ghost" data-close-panel="under40-panel">Close ✕</button>
+      </div>
+      <div class="events-list" id="under40-list"></div>
+    </div>
+  </section>
+
+</body>
+</html>
