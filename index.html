@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <title>Aptima @ I/ITSEC</title>
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
 </head>
 <body>
 
-  <!-- Background video (optional – if background.mp4 is too big, you can swap to an image) -->
   <video id="bg-video" autoplay muted loop playsinline>
     <source src="background.mp4" type="video/mp4" />
   </video>
@@ -44,10 +40,12 @@
     </header>
 
     <section class="layout-container">
+      
       <div class="tile-grid">
+        
         <button class="tile" id="open-events">
           <div class="tile-label">Daily Events</div>
-          <div class="tile-sub">See Aptima's 2025 Papers &amp; Events</div>
+          <div class="tile-sub">See Aptima's 2025 Papers & Events</div>
         </button>
 
         <button class="tile tertiary" id="open-tech">
@@ -69,18 +67,17 @@
           <div class="tile-label">I/ITSEC Volunteers</div>
           <div class="tile-sub">Recognizing Aptima’s commitment</div>
         </button>
+
       </div>
 
       <div class="bottom-video-wrapper">
         <video class="bottom-video" autoplay loop muted playsinline preload="auto">
-          <!-- IMPORTANT: filename must exactly match the file in the repo root -->
           <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4">
         </video>
       </div>
+
     </section>
   </main>
-
-  <!-- PANELS -->
 
   <section class="panel" id="events-panel" aria-hidden="true">
     <div class="panel-inner">
