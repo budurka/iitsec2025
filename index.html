@@ -6,17 +6,158 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css" />
-  
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-[#0B1120] text-white">
+<body class="bg-[#0B1120] text-white overflow-x-hidden">
 
   <div id="root"></div>
 
-  <script type="text/babel" src="script.js"></script>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- DATA ---
+    const dayData = [
+      {
+        id: "mon",
+        label: "Mon, Dec 1",
+        events: [
+          { time: "10:30 – 12:00 · Room 320A", title: "Tutorial 5: Simulation Building Blocks", presenters: "Stephanie Fussell, PhD; Summer Rebensky, PhD" },
+          { time: "12:45 – 14:15 · Room 310CD", title: "Tutorial 2: Humans vs. AI", presenters: "Zachary Klinefelter, PhD; Gabriel Ganberg; Summer Rebensky, PhD" }
+        ]
+      },
+      {
+        id: "tue",
+        label: "Tue, Dec 2",
+        events: [
+          { time: "17:00 – 18:30 · Booth 401", title: "Exhibitor Hospitality at I/ITSEC 2025", presenters: "Join us for light bites and complimentary drinks.", highlight: true }
+        ]
+      }
+    ];
+
+    const techData = [
+      { name: "NAUTICAL", summary: "Accelerate training development.", details: "Uses advanced generative AI RAG and Chain-of-Thought prompting." },
+      { name: "White Cell In A Box", summary: "Data-driven assessment.", details: "Captures objective performance data and unifies mission playback." }
+    ];
+
+    const internRoles = [
+      { division: "Performance Augmentation", title: "Software Engineer Intern", location: "Dayton, OH" },
+      { division: "Intelligent Analytics", title: "AI Engineer Intern", location: "Remote" }
+    ];
+
+    const App = () => {
+      const [activePanel, setActivePanel] = useState(null);
+      const [activeDay, setActiveDay] = useState("mon");
+
+      // Auto-close panels after 60 seconds of inactivity
+      useEffect(() => {
+        let timer;
+        const resetTimer = () => {
+          clearTimeout(timer);
+          timer = setTimeout(() => setActivePanel(null), 60000);
+        };
+        const events = ['mousedown', 'touchstart', 'click'];
+        events.forEach(e => window.addEventListener(e, resetTimer));
+        resetTimer();
+        return () => events.forEach(e => window.removeEventListener(e, resetTimer));
+      }, []);
+
+      const Panel = ({ id, title, isOpen, children }) => (
+        <div className={`fixed inset-0 z-50 transition-opacity duration-300 flex items-end justify-center ${isOpen ? 'opacity-100 pointer-events-auto bg-black/80 backdrop-blur-sm' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`bg-[#0B1120] w-full max-w-4xl h-[85vh] rounded-t-3xl border-t-4 border-cyan-500 p-8 transform transition-transform duration-300 flex flex-col ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+              <h2 className="text-3xl font-black text-cyan-400 uppercase tracking-tight">{title}</h2>
+              <button onClick={() => setActivePanel(null)} className="bg-white/10 px-6 py-2 rounded-full font-bold hover:bg-white/20 transition-colors">Close ✕</button>
+            </div>
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scroll">
+              {children}
+            </div>
+          </div>
+        </div>
+      );
+
+      return (
+        <main className="min-h-screen p-6 flex flex-col items-center">
+          <header className="w-full max-w-4xl flex justify-between items-start mb-8">
+            <div>
+              <img src="aptima-logo-reversed.png" className="h-12 mb-4" alt="Aptima" />
+              <h1 className="text-4xl font-black italic tracking-tighter">APTIMA @ I/ITSEC</h1>
+              <p className="text-cyan-400 font-bold uppercase tracking-widest text-[10px]">Data-Driven Readiness</p>
+            </div>
+            <div className="bg-white/5 p-2 rounded-2xl border border-white/10 flex items-center gap-3">
+               <img src="qr-aptima-website.jpeg" className="w-16 h-16 rounded-lg bg-white p-1" />
+               <p className="text-[10px] font-bold leading-tight w-20 opacity-70 uppercase">Scan to learn more</p>
+            </div>
+          </header>
+
+          <div className="w-full max-w-4xl space-y-4">
+            <button onClick={() => setActivePanel('events')} className="w-full text-left p-8 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-500 shadow-2xl border-t border-white/20 active:scale-[0.98] transition-transform">
+              <div className="text-sm font-bold opacity-80 uppercase tracking-widest mb-1">Featured</div>
+              <div className="text-3xl font-black uppercase">Daily Events</div>
+              <div className="opacity-90 font-medium">View the 2025 Papers & Presentations</div>
+            </button>
+
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => setActivePanel('tech')} className="tile-secondary">Booth Demos</button>
+              <button onClick={() => setActivePanel('intern')} className="tile-secondary">Internships</button>
+            </div>
+
+            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video bg-black mt-4 relative">
+              <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-80">
+                <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] to-transparent opacity-60"></div>
+            </div>
+          </div>
+
+          <Panel id="events" title="Daily Events" isOpen={activePanel === 'events'}>
+            <div className="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+              {dayData.map(d => (
+                <button key={d.id} onClick={() => setActiveDay(d.id)} className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${activeDay === d.id ? 'bg-orange-500 scale-105' : 'bg-white/5 hover:bg-white/10'}`}>{d.label}</button>
+              ))}
+            </div>
+            {dayData.find(d => d.id === activeDay).events.map((ev, i) => (
+              <div key={i} className={`p-5 rounded-2xl border ${ev.highlight ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 bg-white/5'}`}>
+                <div className="text-orange-400 font-bold mb-1">{ev.time}</div>
+                <div className="text-xl font-bold mb-2">{ev.title}</div>
+                <div className="text-sm opacity-60 italic">{ev.presenters}</div>
+              </div>
+            ))}
+          </Panel>
+
+          <Panel id="tech" title="Booth Demonstrations" isOpen={activePanel === 'tech'}>
+            {techData.map((tech, i) => (
+              <div key={i} className="p-6 rounded-2xl border border-white/10 bg-white/5 mb-4">
+                <div className="text-cyan-400 font-black text-2xl mb-1">{tech.name}</div>
+                <div className="font-bold text-white/90 mb-3">{tech.summary}</div>
+                <p className="text-sm opacity-70 leading-relaxed">{tech.details}</p>
+              </div>
+            ))}
+          </Panel>
+
+          <Panel id="intern" title="2026 Internships" isOpen={activePanel === 'intern'}>
+            <div className="p-6 bg-cyan-600/10 border-2 border-cyan-500/30 rounded-2xl mb-6">
+              <h3 className="text-xl font-black mb-1 uppercase tracking-tight">Visit us at the Career Fair</h3>
+              <p className="text-sm opacity-80">Wed, Dec 3rd · 13:00 - 16:00 · Room 210A</p>
+            </div>
+            {internRoles.map((role, i) => (
+              <div key={i} className="p-5 border-b border-white/10 last:border-0">
+                <div className="text-cyan-400 text-[10px] font-black uppercase tracking-widest">{role.division}</div>
+                <div className="text-xl font-bold">{role.title}</div>
+                <div className="text-sm opacity-50">{role.location}</div>
+              </div>
+            ))}
+          </Panel>
+        </main>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 
 </body>
 </html>
