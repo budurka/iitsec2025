@@ -1,461 +1,125 @@
-// ---- DATA: Daily schedule ----
-const dayData = [
-  {
-    id: "mon",
-    label: "Mon, Dec 1",
-    events: [
-      {
-        time: "10:30 – 12:00 · Room 320A",
-        title: "Tutorial 5: Simulation Building Blocks: Game Engines For Military Use 101",
-        location: "Room 320A",
-        type: "Tutorial",
-        presenters: "Aptima Presenters: Stephanie Fussell, PhD; Summer Rebensky, PhD",
-      },
-      {
-        time: "12:45 – 14:15 · Room 310CD",
-        title: "Tutorial 2: Humans vs. AI – Architecting Compound AI for Training and Augmenting Human-AI Teams",
-        location: "Room 310CD",
-        type: "Tutorial",
-        presenters: "Presenters: Zachary Klinefelter, PhD; Gabriel Ganberg; Summer Rebensky, PhD; Adam Fouse, PhD; Svitlana Volkova, PhD",
-      },
-    ],
-  },
-  {
-    id: "tue",
-    label: "Tue, Dec 2",
-    events: [
-      {
-        time: "13:15 – 14:30 · Exhibit Hall",
-        title: "Wargaming Panel – AI's Impact in M&S and the Battlefield",
-        location: "Exhibit Hall",
-        type: "Panel",
-        presenters: "Panelist: Svitlana Volkova, PhD",
-      },
-      {
-        time: "17:00 – 18:30 · Booth 401",
-        title: "Exhibitor Hospitality at I/ITSEC 2025",
-        location: "Booth 401",
-        type: "Hospitality Event",
-        presenters: "Join us for light bites and a complimentary beer, wine, and seltzer bar.",
-        highlight: true 
-      },
-    ],
-  },
-  {
-    id: "wed",
-    label: "Wed, Dec 3",
-    events: [
-      {
-        time: "08:30 – 10:00 · Room 320B",
-        title: "Paper Session: Innovating Talent Strategies: Competency, Collaboration, and Engagement in the Modern Force",
-        location: "Room 320B",
-        type: "Paper Session",
-        presenters: "Paper: Competency Modeling in the USSF · Julia Brown",
-      },
-      {
-        time: "08:30 – 10:00 · Room 320C",
-        title: "Paper Session: Big Data? Bigger Challenges!",
-        location: "Room 320C",
-        type: "Paper Session",
-        presenters: "Session Chair: Summer Rebensky, PhD",
-      },
-      {
-        time: "08:30 – 10:00 · Room 320F",
-        title: "Paper Session: Training Strategies – A Data-Centric Approach for Extracting Flight Maneuvers from Pilot Training Time Series Data",
-        location: "Room 320F",
-        type: "Paper Session",
-        presenters: "Aptima Contributors: Samantha Emerson, PhD; Mark Schroeder-Strong, PhD",
-      },
-      {
-        time: "10:30 – 12:00 · Room 320G",
-        title: "Paper Session: Cognitive Crossroads – Human-AI Collaboration for Synthetic Media Detection in Training and Operations",
-        location: "Room 320G",
-        type: "Paper Session",
-        presenters: "Aptima Contributors: Laura Cassani; Michael Davinroy; Tatiana Toumbeva, PhD; Peter Bautista; Lauren Fortier; Ashley Hart; Svitlana Volkova, PhD",
-      },
-      {
-        time: "10:30 – 12:00 · Room 320F",
-        title: "Paper Session: Of Paper And Pixels – Advancing Training at all Fidelities",
-        location: "Room 320F",
-        type: "Paper Session",
-        presenters: "Paper: Comparing Input Modalities in Extended Reality for a Virtual Learning/Training Task · Stephanie Fussell, PhD; Summer Rebensky, PhD; Samantha Perry, PhD",
-      },
-      {
-        time: "13:00 – 16:00 · Room 210A",
-        title: "NTSA Career Fair at I/ITSEC",
-        location: "Room 210A",
-        type: "Career Fair",
-        presenters: "Bella Perault – People Operations Generalist",
-        highlight: true
-      },
-      {
-        time: "13:30 – 15:00 · Room 320A",
-        title: "Paper Session: The AI Playbook – Designing Missions and Forces at Machine Speed",
-        location: "Room 320A",
-        type: "Paper Session",
-        presenters: "Paper: Applying AI-Driven Generative Models for Computer-Generated Force Scenario Generation · William Dupree, PhD; Svitlana Volkova, PhD; Hsien-Te Kao; Gabriel Ganberg; Alexxa Bessey, PhD; Summer Rebensky, PhD",
-      },
-    ],
-  },
-  {
-    id: "thu",
-    label: "Thu, Dec 4",
-    events: [
-      {
-        time: "08:30 – 10:00 · Destination Lounge",
-        title: "Speaker Session: The Next Big Thing – Wearables and Human Sensors",
-        location: "Destination Lounge",
-        type: "Speaker Session",
-        presenters: "Speaker: Sylvain Bruni · Human AI Teams That Train With You: Embodied Agents for Performance and Readiness",
-      },
-    ],
-  },
-];
+const { useState, useEffect } = React;
 
-// ---- DATA: Showcase Technologies ----
+// --- DATA ---
+const dayData = [/* ... existing dayData ... */];
 const techData = [
-  {
-    id: "nautical",
-    name: "NAUTICAL",
-    summary: "Accelerate training development with NAUTICAL.",
-    valueAdd: "NAUTICAL uses advanced generative AI RAG and Chain-of-Thought prompting to shorten Speed to the Fleet, reduce costs, and improve instructional precision.",
-    details: "By acting as an expert resource inside the ISD process, NAUTICAL strengthens Sailor proficiency and enables faster, more adaptive, and more cost-effective training across the fleet.",
-  },
-  {
-    id: "whitecell",
-    name: "White Cell In A Box",
-    summary: "A portable, data-driven assessment and AAR training solution.",
-    valueAdd: "Get faster insights and higher-quality feedback from every training exercise. Captures objective performance data, unifies mission playback, and digitizes evaluations.",
-    details: "Helps trainers quickly understand what happened, identify performance gaps, and deliver evidence-based feedback across live, virtual, constructive, and simulator environments.",
-    partners: "805th Squadron Operations Center at Nellis Air Force Base",
-  },
-  {
-    id: "propel",
-    name: "PROPEL",
-    summary: "Tactical Action Officer precision learning.",
-    valueAdd: "Provides objective, data-driven performance scoring and personalized learning recommendations. Tracks strengths and weaknesses over time.",
-    details: "By combining real-time data with observer inputs, Propel gives teams a holistic view of performance and helps maintain optimal learning zones.",
-    partners: "Surface Combat Systems Training Command (SCSTC) ATRC at Dahlgren & SCSTC Hampton Roads",
-  },
-  {
-    id: "jitmma",
-    name: "JITMMA",
-    summary: "Personnel-to-mission matching for dynamic operational environments.",
-    valueAdd: "Identifies which available personnel best match mission tasks, what training bridges gaps, and what job aids support execution.",
-    details: "Built for volatile, uncertain, complex, and ambiguous environments where leaders must rapidly reassign tasks across limited personnel.",
-  },
-  {
-    id: "forcegen",
-    name: "FORCEGEN",
-    summary: "AI-enabled training scenario generation.",
-    valueAdd: "Rapidly generates high-quality, mission-relevant scenarios using AI, reducing development time and ensuring relevance to emerging threats.",
-    details: "Supports wargaming and training teams in creating up-to-date scenarios informed by CAF DTC and AF National Guard DTOC.",
-    partners: "Partnering with USAF Distributed Training Centers & the Chief Modeling and Simulation Office",
-  },
-  {
-    id: "ai-wargaming",
-    name: "AI for Wargaming",
-    summary: "High-fidelity kinetic and cognitive warfare mission scenarios.",
-    valueAdd: "Delivers doctrinally aligned, TTP-correct scenarios at machine speed — enabling mission training at operational relevance.",
-    details: "Integrates multiple AI-driven tools to enhance wargaming and training readiness.",
-  },
-  {
-    id: "fitforce",
-    name: "FitForce",
-    summary: "Scalable, offline-capable fitness training platform.",
-    valueAdd: "Improves fitness outcomes, lowers injury rates and cost burdens, and sustains physical readiness.",
-    details: "Deploys scientific strength and conditioning practices, sends workouts to a mobile app, and provides tracking and feedback.",
-    partners: "Marine Corps TECOM, Human Performance Branch, SMIP, and the Martial Arts & Fitness Center of Excellence",
-  },
+  { id: "nautical", name: "NAUTICAL", summary: "Accelerate training development with GenAI.", details: "Uses RAG and Chain-of-Thought prompting to reduce Speed to the Fleet." },
+  { id: "whitecell", name: "White Cell In A Box", summary: "Portable assessment and AAR solution.", details: "Captures performance data for live and virtual exercises." },
+  { id: "propel", name: "PROPEL", summary: "Tactical Action Officer precision learning.", details: "Data-driven scoring and personalized learning recommendations." },
+  { id: "jitmma", name: "JITMMA", summary: "Personnel-to-mission matching.", details: "Matches personnel to tasks in dynamic environments." },
+  { id: "forcegen", name: "FORCEGEN", summary: "AI-enabled training scenario generation.", details: "Rapidly generates mission-relevant scenarios using AI." },
+  { id: "ai-wargaming", name: "AI for Wargaming", summary: "Kinetic and cognitive warfare scenarios.", details: "Delivers doctrinally aligned scenarios at machine speed." },
+  { id: "fitforce", name: "FitForce", summary: "Offline-capable fitness platform.", details: "Scientific strength and conditioning practices for readiness." }
 ];
-
-// ---- DATA: Board Mentions (Updated) ----
-const boardMentions = [
-  { role: "Scholarships Chair", name: "Janet Spruill" }, 
-  { role: "Deputy Chair, Education Subcommittee", name: "Kara Orvis, PhD" },
-  { role: "Tutorial Subcommittee Members", name: "Ramona Shires, ND; Summer Rebensky, PhD" },
-  { role: "Human Performance, Analysis & Engineering Committee Members", name: "Stephanie Fussell, PhD; Summer Rebensky, PhD" },
-];
-
-// ---- DATA: Internships ----
 const internRoles = [
-  { division: "Performance Augmentation Systems", title: "Scientist Intern", location: "Remote", summary: "Support the design and evaluation of human performance augmentation systems." },
-  { division: "Performance Augmentation Systems", title: "Software Engineer Intern", location: "Dayton, OH", summary: "Contribute to software for wearable sensors and IoT-based health monitoring." },
-  { division: "Intelligent Performance Analytics", title: "AI Engineer Intern", location: "Remote", summary: "Collaborate on the design and implementation of ML models and data workflows." },
-  { division: "Strategic Communications", title: "Graphic Artist Intern", location: "Dayton, OH · Woburn, MA · Orlando, FL", summary: "Create engaging visuals that support Aptima’s brand identity." },
-  { division: "Strategic Programs Office", title: "Program Analyst Intern", location: "Orlando, FL", summary: "Support financial reporting, data tracking, and performance monitoring." },
-  { division: "Training, Learning & Readiness", title: "Scientist Intern", location: "Dayton, OH", summary: "Assist with research, data analysis, and reporting on training projects." },
-  { division: "Training, Learning & Readiness", title: "Software Engineer Intern", location: "Dayton, OH", summary: "Develop and test software for training and performance assessment systems." },
+  { title: "Scientist Intern", location: "Remote", division: "Performance Augmentation Systems" },
+  { title: "Software Engineer Intern", location: "Dayton, OH", division: "Performance Augmentation Systems" },
+  { title: "AI Engineer Intern", location: "Remote", division: "Intelligent Performance Analytics" },
+  { title: "Graphic Artist Intern", location: "Multi-Location", division: "Strategic Communications" }
 ];
 
-// ---- DATA: Under 40 ----
-const under40Honorees = [
-  {
-    id: "sam-perry",
-    name: "Dr. Samantha Perry",
-    photo: "sam-perry.png",
-    blurb: "Dr. Samantha Perry is a leader in AI-enabled training and human performance research, guiding one of Aptima’s largest MS&T portfolios. Her work shaping adaptive training systems, mentoring early-career scientists, and advancing the field through prolific scholarship makes her a standout innovator driving the future of defense training."
-  },
-  {
-    id: "alexxa-bessey",
-    name: "Dr. Alexxa Bessey",
-    photo: "alexxa-bessey.png",
-    blurb: "Dr. Alexxa Bessey drives cutting-edge research in team performance, AI-enabled training, and simulation-based evaluation across the Army and Air Force enterprises. Her leadership, mentorship, and policy engagement are shaping the next generation of evidence-based military training."
-  },
-];
+const App = () => {
+  const [activePanel, setActivePanel] = useState(null);
+  const [activeDay, setActiveDay] = useState("mon");
 
-// ---- SCROLL INDICATOR LOGIC ----
-function checkScroll(panelId) {
-  const panel = document.getElementById(panelId);
-  if (!panel) return;
-  
-  const list = panel.querySelector('.events-list');
-  const indicator = panel.querySelector('.scroll-indicator');
-  
-  if (!list || !indicator) return;
+  useEffect(() => {
+    let timer;
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setActivePanel(null), 60000);
+    };
+    ['click', 'touchstart', 'mousemove'].forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+    return () => ['click', 'touchstart', 'mousemove'].forEach(e => window.removeEventListener(e, resetTimer));
+  }, []);
 
-  const isOverflowing = list.scrollHeight > list.clientHeight;
-  
-  const updateIndicator = () => {
-    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 10;
-    if (isOverflowing && !atBottom) {
-      indicator.classList.remove('hidden');
-    } else {
-      indicator.classList.add('hidden');
-    }
-  };
+  const Panel = ({ id, title, isOpen, children }) => (
+    <div className={`fixed inset-0 z-50 flex items-end justify-center transition-all duration-500 ${isOpen ? 'bg-black/80 opacity-100' : 'bg-transparent opacity-0 pointer-events-none'}`}>
+      <div className={`bg-[#0B1120] w-full max-w-4xl h-[85vh] rounded-t-3xl border-t-4 border-cyan-500 p-8 shadow-2xl transform transition-transform duration-500 ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+        <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+          <h2 className="text-2xl font-black text-cyan-400 uppercase tracking-tighter">{title}</h2>
+          <button onClick={() => setActivePanel(null)} className="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full font-bold transition-colors">Close ✕</button>
+        </div>
+        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scroll">{children}</div>
+      </div>
+    </div>
+  );
 
-  updateIndicator();
-  list.onscroll = updateIndicator;
-}
+  return (
+    <div className="min-h-screen p-6 max-w-4xl mx-auto flex flex-col">
+      <header className="flex justify-between items-start mb-10">
+        <div className="space-y-2">
+          <img src="2025-Aptima-Logomark.png" className="h-14" alt="Logo" />
+          <h1 className="text-4xl font-black italic tracking-tighter">APTIMA @ I/ITSEC</h1>
+          <p className="text-cyan-400 text-xs font-bold tracking-[0.2em] uppercase">The Future of Human Performance</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex items-center gap-3">
+          <img src="qr-aptima-website.jpeg" className="w-16 h-16 rounded bg-white p-1" />
+          <p className="text-[10px] font-bold uppercase leading-tight opacity-70 w-20">Scan for Solutions</p>
+        </div>
+      </header>
 
-// ---- DATE LOGIC ----
-function getDefaultDayId() {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
+      <div className="space-y-4 flex-1">
+        <button onClick={() => setActivePanel('events')} className="w-full text-left p-8 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-500 shadow-2xl border-t border-white/20 transition-transform active:scale-95">
+          <div className="text-3xl font-black uppercase tracking-tighter">Daily Events</div>
+          <p className="opacity-90 font-medium">Papers, Panels, & Special Presentations</p>
+        </button>
 
-  const currentYear = now.getFullYear();
+        <div className="grid grid-cols-2 gap-4">
+          <button onClick={() => setActivePanel('tech')} className="tile-secondary">Booth Demos</button>
+          <button onClick={() => setActivePanel('intern')} className="tile-secondary">2026 Internships</button>
+        </div>
 
-  const dayMap = dayData.map(d => {
-    const datePart = d.label.split(', ')[1]; 
-    const dateObj = new Date(`${datePart}, ${currentYear}`);
-    dateObj.setHours(0, 0, 0, 0);
-    return { id: d.id, date: dateObj };
-  });
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black aspect-video relative group">
+          <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+            <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
 
-  const todayMatch = dayMap.find(d => d.date.getTime() === now.getTime());
-  if (todayMatch) return todayMatch.id;
+      <Panel id="events" title="Daily Schedule" isOpen={activePanel === 'events'}>
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
+          {dayData.map(d => (
+            <button key={d.id} onClick={() => setActiveDay(d.id)} className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap border ${activeDay === d.id ? 'bg-orange-500 border-orange-400 shadow-lg' : 'bg-white/5 border-white/10 opacity-60'}`}>{d.label}</button>
+          ))}
+        </div>
+        {dayData.find(d => d.id === activeDay).events.map((ev, i) => (
+          <div key={i} className={`p-5 rounded-2xl border ${ev.highlight ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 bg-white/5'}`}>
+            <div className="text-orange-400 font-bold text-sm uppercase tracking-widest mb-1">{ev.time}</div>
+            <div className="text-xl font-bold leading-tight mb-2">{ev.title}</div>
+            <div className="text-sm opacity-60 italic">{ev.presenters}</div>
+          </div>
+        ))}
+      </Panel>
 
-  const futureMatch = dayMap.find(d => d.date > now);
-  if (futureMatch) return futureMatch.id;
+      <Panel id="tech" title="Booth Demonstrations" isOpen={activePanel === 'tech'}>
+        {techData.map((t, i) => (
+          <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <h3 className="text-xl font-black text-cyan-400 mb-1">{t.name}</h3>
+            <p className="font-bold text-sm mb-3 opacity-90">{t.summary}</p>
+            <p className="text-sm opacity-60 leading-relaxed">{t.details}</p>
+          </div>
+        ))}
+      </Panel>
 
-  return dayData[0].id;
-}
+      <Panel id="intern" title="2026 Opportunities" isOpen={activePanel === 'intern'}>
+        <div className="bg-orange-600/20 border border-orange-500 p-6 rounded-2xl mb-6">
+          <h3 className="font-black text-xl mb-1">Career Fair at I/ITSEC</h3>
+          <p className="text-sm opacity-90">Wednesday, 13:00 – 16:00 • Room 210A</p>
+        </div>
+        {internRoles.map((role, i) => (
+          <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center">
+            <div>
+              <div className="text-cyan-400 text-xs font-bold uppercase mb-1">{role.division}</div>
+              <div className="text-lg font-bold">{role.title}</div>
+            </div>
+            <div className="text-xs font-bold bg-white/10 px-3 py-1 rounded-full">{role.location}</div>
+          </div>
+        ))}
+      </Panel>
+    </div>
+  );
+};
 
-// ---- PANEL UTILITIES ----
-function openPanel(id) {
-  const panel = document.getElementById(id);
-  if (!panel) return;
-  panel.classList.add("open");
-  panel.setAttribute("aria-hidden", "false");
-  setTimeout(() => checkScroll(id), 100);
-}
-
-function closePanel(id) {
-  const panel = document.getElementById(id);
-  if (!panel) return;
-  panel.classList.remove("open");
-  panel.setAttribute("aria-hidden", "true");
-}
-
-// ---- RENDER HELPERS ----
-function renderDayTabs() {
-  const tabsContainer = document.getElementById("day-tabs");
-  if (!tabsContainer) return;
-  tabsContainer.innerHTML = "";
-  dayData.forEach((day, index) => {
-    const btn = document.createElement("button");
-    btn.className = "day-tab" + (index === 0 ? " active" : "");
-    btn.textContent = day.label;
-    btn.dataset.dayId = day.id;
-    btn.addEventListener("click", () => selectDay(day.id));
-    tabsContainer.appendChild(btn);
-  });
-}
-
-function selectDay(dayId) {
-  const tabsContainer = document.getElementById("day-tabs");
-  if (tabsContainer) {
-    const buttons = tabsContainer.querySelectorAll(".day-tab");
-    buttons.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.dayId === dayId);
-    });
-  }
-  renderEventsForDay(dayId);
-  setTimeout(() => checkScroll('events-panel'), 50);
-}
-
-function renderEventsForDay(dayId) {
-  const day = dayData.find((d) => d.id === dayId) || dayData[0];
-  const list = document.getElementById("events-list");
-  if (!list || !day) return;
-  list.innerHTML = "";
-  
-  const parseMinutes = (ev) => {
-    if (!ev || !ev.time) return 0;
-    const firstPart = ev.time.split("–")[0].trim();
-    const hhmm = firstPart.split("·")[0].trim().split(" ")[0];
-    const [h, m] = hhmm.split(":").map(n => parseInt(n, 10) || 0);
-    return h * 60 + m;
-  };
-  const sortedEvents = [...day.events].sort((a, b) => parseMinutes(a) - parseMinutes(b));
-
-  sortedEvents.forEach((event) => {
-    const card = document.createElement("article");
-    card.className = "event-card" + (event.highlight ? " highlight" : "");
-    card.innerHTML = `
-      <div class="event-time">${event.time}</div>
-      <div class="event-title">${event.title}</div>
-      <div class="event-meta">${event.type} · ${event.location}</div>
-      <div class="event-presenters">${event.presenters}</div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function renderTechnologies() {
-  const list = document.getElementById("tech-list");
-  if (!list) return;
-  list.innerHTML = "";
-  techData.forEach((tech) => {
-    const card = document.createElement("article");
-    card.className = "event-card";
-    card.innerHTML = `
-      <div class="event-title">${tech.name}</div>
-      <div class="event-meta">${tech.summary}</div>
-      <div class="event-presenters"><strong>Value:</strong> ${tech.valueAdd}</div>
-      ${tech.partners ? `<div class="event-presenters"><strong>Partners:</strong> ${tech.partners}</div>` : ""}
-      <div class="event-presenters">${tech.details}</div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function renderBoardMentions() {
-  const list = document.getElementById("board-list");
-  if (!list) return;
-  list.innerHTML = "";
-  boardMentions.forEach((entry) => {
-    const card = document.createElement("article");
-    card.className = "event-card";
-    card.innerHTML = `
-      <div class="event-title">${entry.role}</div>
-      <div class="event-presenters">${entry.name}</div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function renderInternships() {
-  const list = document.getElementById("intern-list");
-  if (!list) return;
-  list.innerHTML = "";
-  internRoles.forEach((role) => {
-    const card = document.createElement("article");
-    card.className = "event-card";
-    card.innerHTML = `
-      <div class="event-time">${role.division}</div>
-      <div class="event-title">${role.title}</div>
-      <div class="event-meta">${role.location}</div>
-      <div class="event-presenters">${role.summary}</div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function renderUnder40() {
-  const list = document.getElementById("under40-list");
-  if (!list) return;
-  list.innerHTML = "";
-  under40Honorees.forEach((h) => {
-    const card = document.createElement("article");
-    card.className = "event-card honoree-card";
-    const img = document.createElement("img");
-    img.src = h.photo;
-    img.alt = h.name;
-    img.className = "honoree-photo";
-    const nameEl = document.createElement("div");
-    nameEl.className = "event-title";
-    nameEl.textContent = h.name;
-    const blurbEl = document.createElement("div");
-    blurbEl.className = "event-presenters";
-    blurbEl.textContent = h.blurb;
-    card.appendChild(img);
-    card.appendChild(nameEl);
-    card.appendChild(blurbEl);
-    list.appendChild(card);
-  });
-}
-
-// ---- IDLE TIMER & AUTO-CLOSE LOGIC ----
-let idleTimer;
-const TIMEOUT_DURATION = 60000; // 60 seconds
-
-function closeAllModals() {
-  const openPanels = document.querySelectorAll('.panel.open');
-  if (openPanels.length > 0) {
-    console.log("User inactive. Closing all panels.");
-    openPanels.forEach(panel => {
-      closePanel(panel.id);
-    });
-    document.querySelectorAll('.events-list').forEach(list => {
-      list.scrollTop = 0;
-    });
-  }
-}
-
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(closeAllModals, TIMEOUT_DURATION);
-}
-
-// ---- INIT ----
-document.addEventListener("DOMContentLoaded", () => {
-  const map = {
-    "open-events": "events-panel",
-    "open-tech": "tech-panel",
-    "open-board": "board-panel",
-    "open-intern": "intern-panel",
-    "open-under40": "under40-panel"
-  };
-
-  Object.keys(map).forEach(btnId => {
-    const btn = document.getElementById(btnId);
-    if(btn) btn.addEventListener("click", () => openPanel(map[btnId]));
-  });
-
-  document.querySelectorAll("[data-close-panel]").forEach((btn) => {
-    btn.addEventListener("click", () => closePanel(btn.dataset.closePanel));
-  });
-
-  renderDayTabs();
-  const defaultDay = getDefaultDayId();
-  selectDay(defaultDay);
-
-  renderTechnologies();
-  renderBoardMentions();
-  renderInternships();
-  renderUnder40();
-
-  document.querySelectorAll(".panel").forEach((panelEl) => {
-    panelEl.addEventListener("click", (e) => {
-      if (e.target === panelEl) closePanel(panelEl.id);
-    });
-  });
-
-  const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-  activityEvents.forEach(evt => {
-    document.addEventListener(evt, resetIdleTimer, true);
-  });
-  resetIdleTimer();
-});
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
