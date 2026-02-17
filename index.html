@@ -10,250 +10,217 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    /* --- FONTS --- */
+    /* --- THEME & FONTS --- */
     @font-face {
       font-family: "Atkinson Hyperlegible Next";
       src: url("AtkinsonHyperlegibleNext-VariableFont_wght.ttf") format("truetype");
       font-weight: 100 900;
-      font-style: normal;
     }
 
-    /* --- RESET & BASE --- */
+    :root {
+      --aptima-orange: #FA8A08;
+      --aptima-orange-dark: #f25e29;
+      --bg-dark: #141417;
+      --glass-bg: rgba(20, 20, 23, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-blur: 20px;
+    }
+
+    /* --- BASE RESET --- */
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; height: 100%; width: 100%; }
     
     body {
-      font-family: "Atkinson Hyperlegible Next", sans-serif;
-      background-color: #141417;
+      font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+      background-color: var(--bg-dark);
       color: #ffffff;
-      overflow: hidden; /* Prevent default browser scrollbar, we scroll the .kiosk div instead */
+      overflow: hidden; 
     }
 
     /* --- BACKGROUND --- */
     #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
     .overlay {
       position: fixed; inset: 0;
-      background: radial-gradient(circle at top, rgba(20, 20, 23, 0.5) 0, rgba(20, 20, 23, 0.92) 65%, #141417 100%);
+      background: radial-gradient(circle at top, rgba(20, 20, 23, 0.4) 0, rgba(20, 20, 23, 0.95) 70%, #141417 100%);
       z-index: -1;
     }
 
-    /* --- MAIN SCROLLABLE CONTAINER --- */
-    .kiosk-scroll-wrapper {
+    /* --- LAYOUT UTILITIES --- */
+    .scroll-wrapper {
       height: 100vh;
       width: 100%;
-      overflow-y: auto; /* ENABLE SCROLLING HERE */
-      -webkit-overflow-scrolling: touch;
+      overflow-y: auto;
       padding: 2vh 5vw;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .kiosk-content {
+    .container {
       max-width: 1000px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 3rem; /* Better spacing between header and tiles */
-      padding-bottom: 4rem; /* Extra space at bottom for scrolling */
+      gap: 2.5rem;
+      padding-bottom: 4rem;
     }
 
     /* --- HEADER --- */
-    .kiosk-header { 
+    .header { 
       display: flex; 
       justify-content: space-between; 
-      align-items: flex-start; /* Align top so QR code doesn't drag header down */
-      width: 100%;
+      align-items: flex-start;
       padding-top: 1rem;
     }
+    .header-content { display: flex; flex-direction: column; gap: 0.5rem; }
+    .logo { height: 50px; width: auto; display: block; object-fit: contain; align-self: flex-start; }
+    .title { margin: 0; font-size: 2.2rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.02em; }
+    .subtitle { margin: 0; font-size: 1.1rem; opacity: 0.8; font-weight: 400; }
 
-    .header-left { display: flex; flex-direction: column; gap: 0.8rem; }
-    
-    /* LOGO FIX */
-    .logo { 
-      height: 50px; /* Fixed height to prevent explosion */
-      width: auto; 
-      display: block; 
-      object-fit: contain;
-      align-self: flex-start;
-    }
-
-    .title-wrap h1 { 
-      margin: 0; 
-      font-size: 2.2rem; 
-      line-height: 1.1; 
-      text-transform: uppercase; 
-      letter-spacing: 0.02em; 
-    }
-    
-    .subtitle { 
-      margin: 0.5rem 0 0 0; 
-      font-size: 1.1rem; 
-      opacity: 0.9; 
-      font-weight: 400; 
-    }
-
-    /* --- QR CODE CARD --- */
-    .qr-card { 
-      background: rgba(12, 12, 16, 0.85); 
-      border: 1px solid rgba(255,255,255,0.2); 
-      border-radius: 18px; 
-      padding: 0.8rem 1.2rem; 
-      backdrop-filter: blur(12px); 
+    /* --- QR BADGE --- */
+    .qr-badge { 
+      background: rgba(0, 0, 0, 0.4); 
+      border: 1px solid var(--glass-border); 
+      border-radius: 16px; 
+      padding: 0.8rem; 
+      backdrop-filter: blur(var(--glass-blur)); 
       display: flex; 
       align-items: center; 
       gap: 1rem;
-      flex-shrink: 0;
     }
-    
-    .qr-img { 
-      width: 80px; 
-      height: 80px; 
-      border-radius: 6px; 
-      background: #fff; 
-      padding: 4px; 
-      display: block;
-    }
-    
-    .qr-text { font-size: 0.9rem; max-width: 120px; font-weight: 500; line-height: 1.3; }
+    .qr-img { width: 80px; height: 80px; border-radius: 8px; background: #fff; padding: 4px; display: block; }
+    .qr-text { font-size: 0.85rem; max-width: 120px; font-weight: 600; line-height: 1.3; }
 
-    /* --- TILE GRID --- */
-    .tile-grid { 
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 100%; 
-    }
-
+    /* --- TILES --- */
+    .tile-grid { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+    
     .tile {
+      position: relative;
       width: 100%; 
       border-radius: 16px; 
-      padding: 1.8rem 2rem; 
+      padding: 2rem; 
       text-align: left; 
       font: inherit; 
       cursor: pointer;
       display: flex; 
       flex-direction: column; 
-      gap: 0.4rem;
+      gap: 0.3rem;
       color: #ffffff; 
-      border: 1px solid rgba(255, 255, 255, 0.25); 
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
-      backdrop-filter: blur(15px); 
-      transition: transform 0.15s ease-out;
+      border: 1px solid var(--glass-border); 
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px); 
+      transition: all 0.2s ease;
+      overflow: hidden;
     }
     
-    .tile:active { transform: scale(0.98); filter: brightness(1.1); }
-    
-    .btn-orange { background: linear-gradient(135deg, rgba(242, 94, 41, 0.96), rgba(250, 138, 8, 0.92)); }
-    .btn-purple { background: linear-gradient(135deg, #3600ab, #4d08d9); }
+    /* Hover Effects for Desktop */
+    @media (hover: hover) {
+      .tile:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.4); }
+    }
+    .tile:active { transform: scale(0.98); }
 
-    .tile-label { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
-    .tile-sub { font-size: 1.05rem; opacity: 0.95; font-weight: 400; }
+    /* Tile Variants */
+    .tile.orange { background: linear-gradient(135deg, rgba(242, 94, 41, 0.9), rgba(250, 138, 8, 0.8)); border: none; }
+    .tile.purple { background: linear-gradient(135deg, rgba(54, 0, 171, 0.8), rgba(77, 8, 217, 0.8)); border: none; }
 
-    /* --- BOTTOM VIDEO --- */
-    .bottom-video-container { 
+    .tile-label { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+    .tile-sub { font-size: 1.05rem; opacity: 0.9; font-weight: 400; }
+
+    /* --- VIDEO WIDGET --- */
+    .video-widget { 
       width: 100%; 
       border-radius: 16px; 
       overflow: hidden; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255, 255, 255, 0.15); 
-      margin-top: 1rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      border: 1px solid var(--glass-border); 
     }
-    
-    .bottom-video { width: 100%; display: block; }
+    .video-widget video { width: 100%; display: block; }
 
-    /* --- PANELS (MODALS) --- */
-    .panel-overlay { 
+    /* --- MODAL SYSTEM --- */
+    .modal-backdrop { 
       position: fixed; inset: 0; 
-      background: rgba(0,0,0,0.8); 
+      background: rgba(0,0,0,0.6); 
       z-index: 100; 
       display: flex; justify-content: center; align-items: flex-end; 
       animation: fadeIn 0.2s forwards;
+      backdrop-filter: blur(5px);
     }
     
-    .panel-content {
-      background: rgba(20, 20, 23, 0.98); 
+    .modal-content {
+      background: #1a1a1e; 
       width: 100%; 
       max-width: 1000px; 
-      height: 90vh; 
+      height: 85vh; 
       border-radius: 24px 24px 0 0;
-      border: 1px solid rgba(255, 255, 255, 0.2); 
-      padding: 2rem; 
+      border-top: 1px solid var(--glass-border); 
+      box-shadow: 0 -10px 60px rgba(0,0,0,0.9);
       display: flex; 
       flex-direction: column;
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
-      transform: translateY(100%); 
       animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
-    @keyframes fadeIn { to { opacity: 1; } }
-    @keyframes slideUp { to { transform: translateY(0); } }
+    .modal-header { 
+      padding: 1.5rem 2rem; 
+      display: flex; justify-content: space-between; align-items: center; 
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .modal-header h2 { margin: 0; font-size: 1.6rem; }
 
-    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-shrink: 0; }
-    .panel-header h2 { margin: 0; font-size: 1.8rem; }
-    
     .btn-close { 
-      background: transparent; 
-      border: 1px solid rgba(255,255,255,0.4); 
-      color: #fff; 
+      background: rgba(255,255,255,0.1); 
+      border: none; color: #fff; 
       padding: 0.5rem 1.2rem; 
       border-radius: 50px; 
-      cursor: pointer; 
-      font-size: 1rem; 
+      font-weight: 600; cursor: pointer; 
     }
 
-    .scroll-list { flex: 1; overflow-y: auto; padding-right: 0.5rem; }
-    
-    /* --- EVENT CARDS --- */
-    .event-card { 
-      background: rgba(255,255,255,0.06); 
-      border: 1px solid rgba(255,255,255,0.1); 
+    .modal-body { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 1.5rem 2rem; 
+    }
+
+    /* --- CONTENT CARDS --- */
+    .card { 
+      background: rgba(255,255,255,0.03); 
+      border: 1px solid rgba(255,255,255,0.08); 
       border-radius: 12px; 
       padding: 1.2rem; 
       margin-bottom: 1rem; 
     }
-
-    .event-time { color: #f25e29; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.05rem; }
-    .event-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.3; }
-    .event-meta { opacity: 0.9; font-size: 1rem; margin-bottom: 0.5rem; }
-    .event-presenters { font-size: 0.95rem; opacity: 0.8; line-height: 1.4; }
-
-    /* HIGHLIGHT / FEATURED STYLE */
-    .event-card.highlight {
-      border: 2px solid #FA8A08; 
-      background: linear-gradient(to bottom right, rgba(250, 138, 8, 0.15), rgba(20, 20, 23, 0.8));
-      box-shadow: 0 0 20px rgba(250, 138, 8, 0.2);
-      position: relative;
+    .card-highlight {
+      border: 1px solid var(--aptima-orange);
+      background: linear-gradient(to right, rgba(250, 138, 8, 0.1), transparent);
     }
-
-    .highlight-badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: #FA8A08;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
+    .badge { 
+      display: inline-block; font-size: 0.7rem; font-weight: 800; 
+      color: var(--aptima-orange); letter-spacing: 0.05em; 
+      text-transform: uppercase; margin-bottom: 0.5rem; 
     }
+    
+    .text-accent { color: var(--aptima-orange); font-weight: 700; }
+    .text-title { font-size: 1.25rem; font-weight: 700; margin: 0.2rem 0; }
+    .text-body { font-size: 0.95rem; opacity: 0.85; line-height: 1.5; margin-top: 0.5rem; }
 
     /* --- TABS --- */
-    .day-tabs { display: flex; gap: 0.8rem; margin-bottom: 1.2rem; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0; }
-    .day-tab { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 1rem; }
-    .day-tab.active { background: #f25e29; border-color: #f25e29; }
-
-    /* --- HONOREES --- */
-    .honoree-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-    .honoree-card { background: rgba(255,255,255,0.05); border: 1px solid #FA8A08; padding: 2rem 1.5rem; text-align: center; border-radius: 12px; position: relative; margin-top: 10px; }
-    .honoree-photo { width: 150px; height: 150px; border-radius: 50%; border: 3px solid #FA8A08; margin-bottom: 1rem; object-fit: cover; background: #333; }
-    .honoree-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #141417; color: #FA8A08; border: 1px solid #FA8A08; padding: 2px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }
-
-    /* --- CAREER BANNER --- */
-    .career-banner { 
-      border: 2px solid #FA8A08; 
-      background: linear-gradient(to bottom right, rgba(250, 138, 8, 0.15), rgba(20, 20, 23, 0.85)); 
-      padding: 1.5rem; 
-      border-radius: 14px; 
-      margin-bottom: 1.5rem; 
+    .tabs { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 5px; }
+    .tab { 
+      background: transparent; border: 1px solid rgba(255,255,255,0.3); 
+      color: #fff; padding: 0.5rem 1.2rem; border-radius: 50px; 
+      cursor: pointer; white-space: nowrap; font-size: 1rem; 
+      transition: all 0.2s;
     }
-    .career-banner h3 { margin: 0 0 0.5rem 0; font-size: 1.4rem; color: #fff; }
-    .career-banner p { margin: 0.3rem 0; font-size: 1.05rem; opacity: 0.95; }
+    .tab.active { background: var(--aptima-orange); border-color: var(--aptima-orange); color: #000; font-weight: 700; }
+
+    /* --- GRID LAYOUTS --- */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    
+    /* --- HONOREE STYLES --- */
+    .honoree-card { text-align: center; padding: 2rem; position: relative; margin-top: 1rem; }
+    .honoree-img { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--aptima-orange); margin-bottom: 1rem; object-fit: cover; background: #333; }
+    .honoree-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #000; color: var(--aptima-orange); border: 1px solid var(--aptima-orange); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
+
+    /* --- ANIMATIONS --- */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -262,268 +229,205 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- DATA ---
-    const dayData = [
-      { id: "mon", label: "Mon, Dec 1", events: [
-        { time: "10:30 – 12:00 · Room 320A", title: "Tutorial 5: Simulation Building Blocks", type: "Tutorial", presenters: "Aptima Presenters: Stephanie Fussell, PhD; Summer Rebensky, PhD" },
-        { time: "12:45 – 14:15 · Room 310CD", title: "Tutorial 2: Humans vs. AI", type: "Tutorial", presenters: "Zachary Klinefelter, PhD; Gabriel Ganberg; Summer Rebensky, PhD" }
-      ]},
-      { id: "tue", label: "Tue, Dec 2", events: [
-        { time: "13:15 – 14:30 · Exhibit Hall", title: "Wargaming Panel – AI's Impact in M&S", type: "Panel", presenters: "Panelist: Svitlana Volkova, PhD" },
-        { time: "17:00 – 18:30 · Booth 401", title: "Exhibitor Hospitality at I/ITSEC 2025", type: "Hospitality Event", presenters: "Join us for light bites and a complimentary beer, wine, and seltzer bar.", highlight: true }
-      ]},
-      { id: "wed", label: "Wed, Dec 3", events: [
-        { time: "08:30 – 10:00 · Room 320B", title: "Paper Session: Innovating Talent Strategies", type: "Paper Session", presenters: "Paper: Competency Modeling in the USSF · Julia Brown" },
-        { time: "08:30 – 10:00 · Room 320F", title: "Paper Session: Training Strategies", type: "Paper Session", presenters: "Aptima Contributors: Samantha Emerson, PhD; Mark Schroeder-Strong, PhD" },
-        { time: "10:30 – 12:00 · Room 320G", title: "Paper Session: Cognitive Crossroads", type: "Paper Session", presenters: "Aptima Contributors: Laura Cassani; Michael Davinroy; Tatiana Toumbeva, PhD" },
-        { time: "13:00 – 16:00 · Room 210A", title: "NTSA Career Fair at I/ITSEC", type: "Career Fair", presenters: "Bella Perault – People Operations Generalist", highlight: true },
-        { time: "13:30 – 15:00 · Room 320A", title: "Paper Session: The AI Playbook", type: "Paper Session", presenters: "Paper: AI-Driven Generative Models · William Dupree, PhD; Svitlana Volkova, PhD" }
-      ]},
-      { id: "thu", label: "Thu, Dec 4", events: [
-        { time: "08:30 – 10:00 · Dest. Lounge", title: "Speaker Session: The Next Big Thing – Wearables", type: "Speaker Session", presenters: "Speaker: Sylvain Bruni" }
-      ]}
-    ];
+    // --- DATA STORE ---
+    const DATA = {
+      days: [
+        { id: "mon", label: "Mon, Dec 1", events: [
+          { time: "10:30 – 12:00 · Room 320A", title: "Tutorial 5: Simulation Building Blocks", type: "Tutorial", presenters: "Stephanie Fussell, PhD; Summer Rebensky, PhD" },
+          { time: "12:45 – 14:15 · Room 310CD", title: "Tutorial 2: Humans vs. AI", type: "Tutorial", presenters: "Zachary Klinefelter, PhD; Gabriel Ganberg; Summer Rebensky, PhD" }
+        ]},
+        { id: "tue", label: "Tue, Dec 2", events: [
+          { time: "13:15 – 14:30 · Exhibit Hall", title: "Wargaming Panel – AI's Impact in M&S", type: "Panel", presenters: "Panelist: Svitlana Volkova, PhD" },
+          { time: "17:00 – 18:30 · Booth 401", title: "Exhibitor Hospitality at I/ITSEC 2025", type: "Hospitality Event", presenters: "Join us for light bites and a complimentary beer, wine, and seltzer bar.", highlight: true }
+        ]},
+        { id: "wed", label: "Wed, Dec 3", events: [
+          { time: "08:30 – 10:00 · Room 320B", title: "Paper Session: Innovating Talent Strategies", type: "Paper Session", presenters: "Paper: Competency Modeling in the USSF · Julia Brown" },
+          { time: "08:30 – 10:00 · Room 320F", title: "Paper Session: Training Strategies", type: "Paper Session", presenters: "Aptima Contributors: Samantha Emerson, PhD; Mark Schroeder-Strong, PhD" },
+          { time: "10:30 – 12:00 · Room 320G", title: "Paper Session: Cognitive Crossroads", type: "Paper Session", presenters: "Aptima Contributors: Laura Cassani; Michael Davinroy; Tatiana Toumbeva, PhD" },
+          { time: "13:00 – 16:00 · Room 210A", title: "NTSA Career Fair at I/ITSEC", type: "Career Fair", presenters: "Bella Perault – People Operations Generalist", highlight: true },
+          { time: "13:30 – 15:00 · Room 320A", title: "Paper Session: The AI Playbook", type: "Paper Session", presenters: "Paper: AI-Driven Generative Models · William Dupree, PhD; Svitlana Volkova, PhD" }
+        ]},
+        { id: "thu", label: "Thu, Dec 4", events: [
+          { time: "08:30 – 10:00 · Dest. Lounge", title: "Speaker Session: Wearables", type: "Speaker Session", presenters: "Speaker: Sylvain Bruni" }
+        ]}
+      ],
+      tech: [
+        { name: "NAUTICAL™", summary: "Accelerate training development.", details: "Uses advanced generative AI RAG and Chain-of-Thought prompting to shorten Speed to the Fleet." },
+        { name: "White Cell In A Box", summary: "Data-driven assessment & AAR.", details: "Captures objective performance data, unifies mission playback, and digitizes evaluations." },
+        { name: "PROPEL", summary: "Tactical Action Officer precision learning.", details: "Provides objective, data-driven performance scoring and personalized learning recommendations." },
+        { name: "JITMMA", summary: "Personnel-to-mission matching.", details: "Identifies which available personnel best match mission tasks." },
+        { name: "FORCEGEN", summary: "AI-enabled training scenario generation.", details: "Rapidly generates high-quality, mission-relevant scenarios using AI." },
+        { name: "AI for Wargaming", summary: "Kinetic and cognitive warfare scenarios.", details: "Delivers doctrinally aligned, TTP-correct scenarios at machine speed." },
+        { name: "FitForce", summary: "Scalable fitness training platform.", details: "Deploys scientific strength and conditioning practices." }
+      ],
+      interns: [
+        { division: "Performance Augmentation", title: "Scientist Intern", location: "Remote", summary: "Support the design and evaluation of human performance augmentation systems." },
+        { division: "Intelligent Performance", title: "AI Engineer Intern", location: "Remote", summary: "Collaborate on the design of ML models." },
+        { division: "Strategic Programs", title: "Program Analyst Intern", location: "Orlando, FL", summary: "Support financial reporting, data tracking, and performance monitoring." },
+        { division: "Training & Readiness", title: "Software Engineer Intern", location: "Dayton, OH", summary: "Develop and test software for training and performance assessment systems." }
+      ],
+      under40: [
+        { name: "Dr. Samantha Perry", photo: "sam-perry.png", blurb: "Leader in AI-enabled training and human performance research, guiding one of Aptima’s largest MS&T portfolios." },
+        { name: "Dr. Alexxa Bessey", photo: "alexxa-bessey.png", blurb: "Drives cutting-edge research in team performance, AI-enabled training, and simulation-based evaluation." }
+      ],
+      board: [
+        { role: "Scholarships Chair", name: "Janet Spruill" },
+        { role: "Deputy Chair, Education", name: "Kara Orvis, PhD" },
+        { role: "Tutorial Subcommittee", name: "Ramona Shires, ND; Summer Rebensky, PhD" },
+        { role: "Human Performance Committee", name: "Stephanie Fussell, PhD; Summer Rebensky, PhD" }
+      ]
+    };
 
-    const techData = [
-      { name: "NAUTICAL™", summary: "Accelerate training development.", details: "Uses advanced generative AI RAG and Chain-of-Thought prompting to shorten Speed to the Fleet." },
-      { name: "White Cell In A Box", summary: "A portable, data-driven assessment solution.", details: "Captures objective performance data, unifies mission playback, and digitizes evaluations." },
-      { name: "PROPEL", summary: "Tactical Action Officer precision learning.", details: "Provides objective, data-driven performance scoring and personalized learning recommendations." },
-      { name: "JITMMA", summary: "Personnel-to-mission matching.", details: "Identifies which available personnel best match mission tasks." },
-      { name: "FORCEGEN", summary: "AI-enabled training scenario generation.", details: "Rapidly generates high-quality, mission-relevant scenarios using AI." },
-      { name: "AI for Wargaming", summary: "Kinetic and cognitive warfare scenarios.", details: "Delivers doctrinally aligned, TTP-correct scenarios at machine speed." },
-      { name: "FitForce", summary: "Scalable fitness training platform.", details: "Deploys scientific strength and conditioning practices." }
-    ];
+    // --- REUSABLE COMPONENTS ---
 
-    const internRoles = [
-      { division: "Performance Augmentation", title: "Scientist Intern", location: "Remote", summary: "Support the design and evaluation of human performance augmentation systems." },
-      { division: "Intelligent Performance", title: "AI Engineer Intern", location: "Remote", summary: "Collaborate on the design and implementation of ML models." },
-      { division: "Strategic Programs", title: "Program Analyst Intern", location: "Orlando, FL", summary: "Support financial reporting, data tracking, and performance monitoring." },
-      { division: "Training & Readiness", title: "Software Engineer Intern", location: "Dayton, OH", summary: "Develop and test software for training and performance assessment systems." }
-    ];
+    const IconClose = () => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    );
 
-    const under40 = [
-      { name: "Dr. Samantha Perry", photo: "sam-perry.png", blurb: "Dr. Samantha Perry is a leader in AI-enabled training and human performance research, guiding one of Aptima’s largest MS&T portfolios." },
-      { name: "Dr. Alexxa Bessey", photo: "alexxa-bessey.png", blurb: "Dr. Alexxa Bessey drives cutting-edge research in team performance, AI-enabled training, and simulation-based evaluation." }
-    ];
+    const Modal = ({ title, isOpen, onClose, children }) => {
+      if (!isOpen) return null;
+      return (
+        <div className="modal-backdrop" onClick={onClose}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{title}</h2>
+              <button className="btn-close" onClick={onClose}><IconClose /></button>
+            </div>
+            <div className="modal-body">
+              {children}
+            </div>
+          </div>
+        </div>
+      );
+    };
 
-    const boardMentions = [
-      { role: "Scholarships Chair", name: "Janet Spruill" },
-      { role: "Deputy Chair, Education", name: "Kara Orvis, PhD" },
-      { role: "Tutorial Subcommittee", name: "Ramona Shires, ND; Summer Rebensky, PhD" },
-      { role: "Human Performance Committee", name: "Stephanie Fussell, PhD; Summer Rebensky, PhD" }
-    ];
+    const Tile = ({ label, sub, variant = "purple", onClick }) => (
+      <button className={`tile ${variant}`} onClick={onClick}>
+        <div className="tile-label">{label}</div>
+        <div className="tile-sub">{sub}</div>
+      </button>
+    );
 
-    // --- MAIN COMPONENT ---
+    const EventCard = ({ time, title, meta, desc, highlight }) => (
+      <div className={`card ${highlight ? 'card-highlight' : ''}`}>
+        {highlight && <div className="badge">★ Featured</div>}
+        {time && <div className="text-accent">{time}</div>}
+        <div className="text-title">{title}</div>
+        {meta && <div style={{opacity: 0.7, fontSize: '0.9rem'}}>{meta}</div>}
+        {desc && <div className="text-body">{desc}</div>}
+      </div>
+    );
+
+    const Header = () => (
+      <header className="header">
+        <div className="header-content">
+          <img src="aptima-logo-reversed.png" alt="Aptima" className="logo" />
+          <div>
+            <h1 className="title">APTIMA @ I/ITSEC</h1>
+            <p className="subtitle">Explore our events, solutions, and opportunities.</p>
+          </div>
+        </div>
+        <div className="qr-badge">
+          <img src="qr-aptima-website.jpeg" alt="QR" className="qr-img" />
+          <div className="qr-text">Scan to learn more about Aptima.</div>
+        </div>
+      </header>
+    );
+
+    // --- MAIN APP COMPONENT ---
+
     const App = () => {
-      const [activePanel, setActivePanel] = useState(null);
-      const [activeDay, setActiveDay] = useState("mon");
+      const [view, setView] = useState(null); // 'events', 'tech', 'intern', 'u40', 'board'
+      const [dayId, setDayId] = useState("mon");
 
-      // Auto-close Idle Timer (60s)
+      // Idle Timer
       useEffect(() => {
         let timer;
-        const reset = () => { clearTimeout(timer); timer = setTimeout(() => setActivePanel(null), 60000); };
-        ['mousedown', 'touchstart', 'scroll', 'click'].forEach(evt => window.addEventListener(evt, reset));
+        const reset = () => { clearTimeout(timer); timer = setTimeout(() => setView(null), 60000); };
+        window.addEventListener('click', reset);
+        window.addEventListener('scroll', reset);
         reset();
-        return () => ['mousedown', 'touchstart', 'scroll', 'click'].forEach(evt => window.removeEventListener(evt, reset));
-      }, [activePanel]);
+        return () => { window.removeEventListener('click', reset); window.removeEventListener('scroll', reset); };
+      }, []);
 
-      // Handle Panel Opening
-      const openPanel = (id) => setActivePanel(id);
-      const closePanel = () => setActivePanel(null);
+      const close = () => setView(null);
 
       return (
-        <div className="kiosk-app">
-          {/* Background Video */}
-          <video id="bg-video" autoPlay muted loop playsInline>
-            <source src="background.mp4" type="video/mp4" />
-          </video>
+        <>
+          <video id="bg-video" autoPlay muted loop playsInline><source src="background.mp4" type="video/mp4" /></video>
           <div className="overlay"></div>
 
-          {/* Main Content - SCROLLABLE WRAPPER */}
-          <div className="kiosk-scroll-wrapper">
-            <main className="kiosk-content">
-              
-              <header className="kiosk-header">
-                <div className="header-left">
-                  <img src="aptima-logo-reversed.png" alt="Aptima logo" className="logo" />
-                  <div className="title-wrap">
-                    <h1>APTIMA @ I/ITSEC</h1>
-                    <p className="subtitle">Explore our events, solutions, and opportunities.</p>
-                  </div>
-                </div>
-                
-                <div className="qr-card">
-                  <img src="qr-aptima-website.jpeg" alt="Scan QR" className="qr-img" />
-                  <div className="qr-text">Scan to learn more about Aptima.</div>
-                </div>
-              </header>
+          <div className="scroll-wrapper">
+            <div className="container">
+              <Header />
 
               <div className="tile-grid">
-                <button className="tile btn-orange" onClick={() => openPanel('events')}>
-                  <div className="tile-label">Daily Events</div>
-                  <div className="tile-sub">See Aptima's 2025 Papers & Events</div>
-                </button>
-
-                <button className="tile btn-purple" onClick={() => openPanel('tech')}>
-                  <div className="tile-label">Booth Demonstrations</div>
-                  <div className="tile-sub">Explore our 7 featured solutions</div>
-                </button>
-
-                <button className="tile btn-purple" onClick={() => openPanel('intern')}>
-                  <div className="tile-label">2026 Internship Opportunities</div>
-                  <div className="tile-sub">Preview open roles for next summer</div>
-                </button>
-
-                <button className="tile btn-purple" onClick={() => openPanel('u40')}>
-                  <div className="tile-label">NTSA Top Under 40 Awardees</div>
-                  <div className="tile-sub">Celebrate Aptima’s I/ITSEC 2025 awardees</div>
-                </button>
-
-                <button className="tile btn-purple" onClick={() => openPanel('board')}>
-                  <div className="tile-label">I/ITSEC Volunteers</div>
-                  <div className="tile-sub">Recognizing Aptima’s commitment</div>
-                </button>
+                <Tile variant="orange" label="Daily Events" sub="See Aptima's 2025 Papers & Events" onClick={() => setView('events')} />
+                <Tile label="Booth Demonstrations" sub="Explore our 7 featured solutions" onClick={() => setView('tech')} />
+                <Tile label="2026 Internship Opportunities" sub="Preview open roles for next summer" onClick={() => setView('intern')} />
+                <Tile label="NTSA Top Under 40 Awardees" sub="Celebrate Aptima’s I/ITSEC 2025 awardees" onClick={() => setView('u40')} />
+                <Tile label="I/ITSEC Volunteers" sub="Recognizing Aptima’s commitment" onClick={() => setView('board')} />
               </div>
 
-              <div className="bottom-video-container">
-                <video className="bottom-video" autoPlay loop muted playsInline>
-                  <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" />
-                </video>
+              <div className="video-widget">
+                <video autoPlay loop muted playsInline><source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" /></video>
               </div>
-
-            </main>
+            </div>
           </div>
 
-          {/* --- PANELS --- */}
+          {/* --- MODALS --- */}
           
-          {/* DAILY EVENTS */}
-          {activePanel === 'events' && (
-            <div className="panel-overlay" onClick={closePanel}>
-              <div className="panel-content" onClick={e => e.stopPropagation()}>
-                <div className="panel-header">
-                  <h2>Daily Events</h2>
-                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
-                </div>
-                <div className="day-tabs">
-                  {dayData.map(d => (
-                    <button 
-                      key={d.id} 
-                      className={`day-tab ${activeDay === d.id ? 'active' : ''}`} 
-                      onClick={() => setActiveDay(d.id)}
-                    >
-                      {d.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="scroll-list">
-                  {dayData.find(d => d.id === activeDay).events.map((e, i) => (
-                    <div key={i} className={`event-card ${e.highlight ? 'highlight' : ''}`}>
-                      {e.highlight && <div className="highlight-badge">★ Featured Event</div>}
-                      <div className="event-time">{e.time}</div>
-                      <div className="event-title">{e.title}</div>
-                      <div className="event-meta">{e.type}</div>
-                      <div className="event-presenters">{e.presenters}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <Modal title="Daily Events" isOpen={view === 'events'} onClose={close}>
+            <div className="tabs">
+              {DATA.days.map(d => (
+                <button key={d.id} className={`tab ${dayId === d.id ? 'active' : ''}`} onClick={() => setDayId(d.id)}>{d.label}</button>
+              ))}
             </div>
-          )}
+            {DATA.days.find(d => d.id === dayId)?.events.map((e, i) => (
+              <EventCard key={i} time={e.time} title={e.title} meta={e.type} desc={e.presenters} highlight={e.highlight} />
+            ))}
+          </Modal>
 
-          {/* TECH DEMOS */}
-          {activePanel === 'tech' && (
-            <div className="panel-overlay" onClick={closePanel}>
-              <div className="panel-content" onClick={e => e.stopPropagation()}>
-                <div className="panel-header">
-                  <h2>Booth Demonstrations</h2>
-                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
-                </div>
-                <div className="scroll-list">
-                  {techData.map((t, i) => (
-                    <div key={i} className="event-card">
-                      <div className="event-title" style={{color: '#f25e29'}}>{t.name}</div>
-                      <div style={{fontWeight:'600', marginBottom:'0.5rem'}}>{t.summary}</div>
-                      <div className="event-presenters">{t.details}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <Modal title="Booth Demonstrations" isOpen={view === 'tech'} onClose={close}>
+             {DATA.tech.map((t, i) => (
+               <EventCard key={i} title={t.name} highlight={false} time={null} desc={<>{t.summary}<br/><span style={{opacity:0.7}}>{t.details}</span></>} />
+             ))}
+          </Modal>
+
+          <Modal title="2026 Internship Opportunities" isOpen={view === 'intern'} onClose={close}>
+            <div className="card card-highlight">
+              <div className="badge">★ JOIN US</div>
+              <div className="text-title">NTSA Career Fair at I/ITSEC</div>
+              <div className="text-body"><strong>13:00 – 16:00 • Room 210A</strong><br/>Meet Bella Perault to learn about Aptima’s 2026 internships.</div>
             </div>
-          )}
+            {DATA.interns.map((role, i) => (
+              <EventCard key={i} time={role.division} title={role.title} meta={role.location} desc={role.summary} />
+            ))}
+          </Modal>
 
-          {/* INTERNSHIPS */}
-          {activePanel === 'intern' && (
-            <div className="panel-overlay" onClick={closePanel}>
-              <div className="panel-content" onClick={e => e.stopPropagation()}>
-                <div className="panel-header">
-                  <h2>2026 Internship Opportunities</h2>
-                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
+          <Modal title="NTSA Top Under 40 Awardees" isOpen={view === 'u40'} onClose={close}>
+            <div className="grid-2">
+              {DATA.under40.map((u, i) => (
+                <div key={i} className="card honoree-card">
+                  <div className="honoree-tag">★ 2025 HONOREE ★</div>
+                  <img src={u.photo} alt={u.name} className="honoree-img" />
+                  <div className="text-accent" style={{fontSize: '1.4rem'}}>{u.name}</div>
+                  <div className="text-body">{u.blurb}</div>
                 </div>
-                <div className="career-banner">
-                  <div className="highlight-badge">★ JOIN US!</div>
-                  <h3>NTSA Career Fair at I/ITSEC</h3>
-                  <p><strong>13:00 – 16:00 • Room 210A</strong></p>
-                  <p>Meet Bella Perault to learn about Aptima’s 2026 internships.</p>
-                </div>
-                <div className="scroll-list">
-                  {internRoles.map((role, i) => (
-                    <div key={i} className="event-card">
-                      <div className="event-time" style={{color:'#fff', opacity:0.7, fontWeight:'400'}}>{role.division}</div>
-                      <div className="event-title">{role.title}</div>
-                      <div style={{color:'#f25e29', fontSize:'0.9rem', marginBottom:'0.4rem'}}>{role.location}</div>
-                      <div className="event-presenters">{role.summary}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
-          )}
+          </Modal>
 
-          {/* UNDER 40 */}
-          {activePanel === 'u40' && (
-            <div className="panel-overlay" onClick={closePanel}>
-              <div className="panel-content" onClick={e => e.stopPropagation()}>
-                <div className="panel-header">
-                  <h2>NTSA Top Under 40 Awardees</h2>
-                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
-                </div>
-                <div className="scroll-list">
-                  <div className="honoree-grid">
-                    {under40.map((u, i) => (
-                      <div key={i} className="honoree-card">
-                        <div className="honoree-badge">★ 2025 HONOREE ★</div>
-                        <img src={u.photo} alt={u.name} className="honoree-photo" />
-                        <div className="event-title" style={{color:'#FA8A08', fontSize:'1.4rem'}}>{u.name}</div>
-                        <div className="event-presenters">{u.blurb}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          <Modal title="I/ITSEC Volunteers" isOpen={view === 'board'} onClose={close}>
+            {DATA.board.map((b, i) => (
+              <div key={i} className="card" style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                <div style={{fontWeight:'500'}}>{b.role}</div>
+                <div className="text-accent">{b.name}</div>
               </div>
-            </div>
-          )}
+            ))}
+          </Modal>
 
-          {/* VOLUNTEERS */}
-          {activePanel === 'board' && (
-            <div className="panel-overlay" onClick={closePanel}>
-              <div className="panel-content" onClick={e => e.stopPropagation()}>
-                <div className="panel-header">
-                  <h2>I/ITSEC Volunteers</h2>
-                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
-                </div>
-                <div className="scroll-list">
-                  {boardMentions.map((b, i) => (
-                    <div key={i} className="event-card">
-                      <div className="event-meta" style={{opacity:1, fontSize:'1.1rem'}}>{b.role}</div>
-                      <div className="event-title" style={{color:'#f25e29', fontSize:'1.2rem'}}>{b.name}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-        </div>
+        </>
       );
     };
 
