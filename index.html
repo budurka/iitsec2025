@@ -2,165 +2,228 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Aptima Solutions Kiosk</title>
+  <title>Aptima @ I/ITSEC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
   <style>
-    @font-face { 
-      font-family: "Atkinson"; 
-      src: url("AtkinsonHyperlegibleNext-VariableFont_wght.ttf") format("truetype"); 
-      font-display: swap;
+    /* --- FONTS --- */
+    @font-face {
+      font-family: "Atkinson Hyperlegible Next";
+      src: local("Arial"); /* Fallback for this demo; use your .ttf paths in production */
+      font-weight: 100 900;
     }
+
+    /* --- RESET & BASE --- */
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: "Atkinson Hyperlegible Next", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background-color: #141417;
+      color: #ffffff;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    /* --- BACKGROUND --- */
+    #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+    .overlay {
+      position: fixed; inset: 0;
+      background: radial-gradient(circle at top, rgba(20, 20, 23, 0.5) 0, rgba(20, 20, 23, 0.92) 65%, #141417 100%);
+      z-index: -1;
+    }
+
+    /* --- KIOSK LAYOUT --- */
+    .kiosk { display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; height: 100vh; width: 100%; padding: 2vh 0; }
+    .kiosk-header { display: flex; justify-content: space-between; align-items: center; width: 90%; max-width: 1000px; flex: 0 0 auto; padding-top: 1rem; }
+    .logo { height: 85px; width: auto; display: block; }
+    .title-wrap h1 { margin: 0; font-size: 2.4rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    .subtitle { margin: 0; font-size: 1.15rem; opacity: 0.9; }
+
+    /* --- QR CARD --- */
+    .featured-card-rotator { background: rgba(12, 12, 16, 0.85); border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; padding: 1rem 1.4rem; backdrop-filter: blur(12px); display: flex; align-items: center; }
+    .featured-qr-inline { display: flex; align-items: center; gap: 1.2rem; }
+    .qr-img-small { width: 130px; border-radius: 8px; background: #fff; padding: 4px; }
+    .qr-caption { margin: 0; font-size: 1.05rem; max-width: 150px; font-weight: 500; }
+
+    /* --- TILES --- */
+    .layout-container { width: 90%; max-width: 900px; display: flex; flex-direction: column; gap: 4vh; margin: 0 auto; }
+    .tile-grid { display: flex; flex-direction: column; gap: 2vh; width: 100%; }
+    .tile {
+      width: 100%; border-radius: 20px; padding: 2.2rem 2.5rem; text-align: left; font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 0.35rem;
+      background: linear-gradient(135deg, #3600ab, #4d08d9);
+      color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); backdrop-filter: blur(15px);
+      transition: transform 0.15s ease-out;
+    }
+    .tile:active { transform: scale(0.98); filter: brightness(1.1); }
+    .tile-label { font-size: 1.8rem; font-weight: 800; }
+    .tile-sub { font-size: 1.15rem; opacity: 0.95; }
+
+    /* --- BOTTOM VIDEO --- */
+    .bottom-video-wrapper { width: 100%; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.15); }
+    .bottom-video { width: 100%; display: block; }
+
+    /* --- PANELS --- */
+    .panel { position: fixed; inset: 0; display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.7); z-index: 100; }
+    .panel-inner {
+      background: rgba(20, 20, 23, 0.98); width: 100%; max-width: 1000px; height: 90vh; border-radius: 24px 24px 0 0;
+      border: 1px solid rgba(255, 255, 255, 0.2); padding: 2rem 2.5rem; display: flex; flex-direction: column;
+    }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; }
+
+    /* --- CONTENT --- */
+    .events-list { flex: 1; overflow-y: auto; padding-bottom: 3rem; }
+    .event-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 1.2rem; margin-bottom: 1rem; }
+    .event-time { color: #f25e29; font-weight: 700; margin-bottom: 0.3rem; }
+    .event-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .day-tabs { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; }
+    .day-tab { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 0.5rem 1rem; border-radius: 50px; cursor: pointer; }
+    .day-tab.active { background: #f25e29; border-color: #f25e29; }
     
-    body { 
-      font-family: "Atkinson", sans-serif; 
-      background-color: #0B1120; 
-      background-image: 
-        radial-gradient(at 0% 0%, #0867ec10 0, transparent 50%), 
-        radial-gradient(at 100% 0%, #0B1120 0, transparent 50%);
-      background-attachment: fixed;
-      color: white;
-      -webkit-font-smoothing: antialiased;
-      overflow: hidden; /* Prevents the main page from scrolling */
-    }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.2s ease;
-    }
-
-    /* Fixed Kerning: Slightly wider than before to prevent jumbling */
-    .brand-header {
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-    }
-
-    .label-spacing {
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    .custom-scroll::-webkit-scrollbar { width: 4px; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
+    .honoree-card { text-align: center; border: 1px solid #FA8A08; padding: 2rem; margin-bottom: 1rem; }
+    .honoree-photo { width: 150px; height: 150px; border-radius: 50%; border: 2px solid #FA8A08; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
     const { useState, useEffect } = React;
 
     // --- DATA ---
     const dayData = [
-      { id: "mon", label: "Mon, Dec 1", events: [
-        { time: "10:30 – 12:00", title: "Tutorial 5: Simulation Building Blocks", presenters: "Stephanie Fussell, PhD; Summer Rebensky, PhD" },
-        { time: "12:45 – 14:15", title: "Tutorial 2: Humans vs. AI", presenters: "Zachary Klinefelter, PhD; Gabriel Ganberg; Adam Fouse, PhD" }
-      ]},
-      { id: "tue", label: "Tue, Dec 2", events: [
-        { time: "17:00 – 18:30", title: "Exhibitor Hospitality", presenters: "Booth 401: Food & Drinks", highlight: true }
-      ]}
+      { id: "mon", label: "Mon, Dec 1", events: [{ time: "10:30 – 12:00", title: "Tutorial 5: Game Engines", location: "Room 320A", presenters: "Stephanie Fussell, PhD" }] },
+      { id: "tue", label: "Tue, Dec 2", events: [{ time: "17:00 – 18:30", title: "Exhibitor Hospitality", location: "Booth 401", presenters: "Light bites & drinks" }] }
+      // ... Add more data as needed
     ];
 
     const techData = [
-      { name: "NAUTICAL", summary: "GenAI Training Development.", status: "Available" },
-      { name: "White Cell", summary: "LVC Performance Assessment.", status: "Deployed" },
-      { name: "PROPEL", summary: "Precision Learning TAO.", status: "Soon" }
+      { name: "NAUTICAL", summary: "Accelerate training development.", value: "Generative AI RAG tools." },
+      { name: "White Cell In A Box", summary: "Data-driven assessment.", value: "Unified mission playback." }
     ];
+
+    // --- COMPONENTS ---
+    const Panel = ({ title, isOpen, onClose, children }) => {
+      if (!isOpen) return null;
+      return (
+        <div className="panel" onClick={onClose}>
+          <div className="panel-inner" onClick={e => e.stopPropagation()}>
+            <div className="panel-header">
+              <h2>{title}</h2>
+              <button className="btn-ghost" onClick={onClose}>Close ✕</button>
+            </div>
+            {children}
+          </div>
+        </div>
+      );
+    };
 
     const App = () => {
       const [activePanel, setActivePanel] = useState(null);
-      const [activeDay, setActiveDay] = useState("mon");
+      const [activeDay, setActiveDay] = useState(dayData[0].id);
 
+      // Auto-close idle timer
       useEffect(() => {
-        let timer = setTimeout(() => setActivePanel(null), 60000);
-        const reset = () => { clearTimeout(timer); timer = setTimeout(() => setActivePanel(null), 60000); };
-        window.addEventListener('click', reset);
-        return () => window.removeEventListener('click', reset);
+        let timer;
+        const resetTimer = () => {
+          clearTimeout(timer);
+          timer = setTimeout(() => setActivePanel(null), 60000);
+        };
+        window.addEventListener('mousedown', resetTimer);
+        resetTimer();
+        return () => window.removeEventListener('mousedown', resetTimer);
       }, []);
 
       return (
-        <main className="h-screen w-full max-w-5xl mx-auto p-6 flex flex-col justify-between overflow-hidden">
-          
-          {/* Header - Scaled down for height */}
-          <header className="flex justify-between items-center mb-4">
-            <div className="space-y-1">
-              <img src="aptima-logo-reversed.png" className="h-6 mb-2" alt="Aptima" />
-              <h1 className="text-3xl font-black brand-header text-white uppercase">Aptima @ I/ITSEC</h1>
-              <p className="text-cyan-400 font-bold label-spacing text-[9px] opacity-70">Human-Centered AI Solutions</p>
-            </div>
-            <div className="glass-card p-2 rounded-xl">
-              <img src="qr-aptima-website.jpeg" className="w-12 h-12 rounded bg-white p-0.5" />
-            </div>
-          </header>
+        <div className="kiosk-app">
+          <video id="bg-video" autoPlay muted loop playsInline>
+            <source src="background.mp4" type="video/mp4" />
+          </video>
+          <div className="overlay"></div>
 
-          {/* Main Layout Grid */}
-          <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-            
-            {/* Primary Schedule Button */}
-            <button onClick={() => setActivePanel('events')} className="w-full text-left p-6 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-500 shadow-xl border-t border-white/20 active:scale-95 transition-all">
-              <div className="text-[10px] font-bold label-spacing mb-1 opacity-80 italic">Full Schedule →</div>
-              <div className="text-3xl font-black uppercase brand-header">Daily Schedule</div>
-            </button>
-            
-            {/* Grid for Demos and Internships */}
-            <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => setActivePanel('tech')} className="glass-card p-6 rounded-2xl group text-left">
-                <div className="text-cyan-400 text-[9px] font-bold label-spacing mb-1 group-hover:text-cyan-300">Hub →</div>
-                <div className="text-xl font-black uppercase brand-header">Booth Demos</div>
-              </button>
-              <button onClick={() => setActivePanel('intern')} className="glass-card p-6 rounded-2xl group text-left">
-                <div className="text-cyan-400 text-[9px] font-bold label-spacing mb-1 group-hover:text-cyan-300">Careers →</div>
-                <div className="text-xl font-black uppercase brand-header">Internships</div>
-              </button>
-            </div>
-            
-            <button onClick={() => setActivePanel('under40')} className="glass-card p-6 rounded-2xl group text-left">
-              <div className="text-cyan-400 text-[9px] font-bold label-spacing mb-1">Recognition →</div>
-              <div className="text-xl font-black uppercase brand-header">NTSA Top Under 40</div>
-            </button>
-
-            {/* Video Section - Fills remaining space */}
-            <div className="flex-1 rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black relative">
-              <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60">
-                <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" />
-              </video>
-            </div>
-          </div>
-
-          {/* Modal Panels */}
-          {activePanel && (
-            <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-md transition-all">
-              <div className="bg-[#0B1120] w-full max-w-4xl h-[90vh] rounded-t-3xl border-t-4 border-cyan-500 p-8 flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-3xl font-black text-cyan-400 uppercase italic">/ {activePanel}</h2>
-                  <button onClick={() => setActivePanel(null)} className="bg-white/10 px-6 py-2 rounded-full font-bold">Close</button>
-                </div>
-                <div className="flex-1 overflow-y-auto custom-scroll pr-2 space-y-4">
-                  {/* Render content based on activePanel state */}
-                  {activePanel === 'events' && dayData.map(d => (
-                    <div key={d.id} className="p-4 bg-white/5 rounded-xl border border-white/10">
-                      <div className="font-bold text-orange-400 mb-2">{d.label}</div>
-                      {d.events.map((e, idx) => <div key={idx} className="mb-2 text-sm opacity-80">• {e.time}: {e.title}</div>)}
-                    </div>
-                  ))}
-                  {activePanel === 'tech' && techData.map((t, idx) => (
-                    <div key={idx} className="p-4 bg-white/5 rounded-xl border border-white/10">
-                      <div className="font-bold text-cyan-400">{t.name}</div>
-                      <div className="text-xs opacity-60">{t.summary}</div>
-                    </div>
-                  ))}
+          <main className="kiosk">
+            <header className="kiosk-header">
+              <div className="header-main">
+                <img src="aptima-logo-reversed.png" alt="Aptima logo" className="logo" />
+                <div className="title-wrap">
+                  <h1>APTIMA @ I/ITSEC</h1>
+                  <p className="subtitle">Explore our events, solutions, and opportunities.</p>
                 </div>
               </div>
+              <div className="featured-card-rotator">
+                <div className="featured-qr-inline">
+                  <div className="qr-img-small" style={{background: '#eee', height: '100px', width: '100px'}}>QR</div>
+                  <p className="qr-caption">Scan to learn more about Aptima.</p>
+                </div>
+              </div>
+            </header>
+
+            <section className="layout-container">
+              <div className="tile-grid">
+                <button className="tile" onClick={() => setActivePanel('events')}>
+                  <div className="tile-label">Daily Events</div>
+                  <div className="tile-sub">See Aptima's 2025 Papers & Events</div>
+                </button>
+                <button className="tile" onClick={() => setActivePanel('tech')}>
+                  <div className="tile-label">Booth Demonstrations</div>
+                  <div className="tile-sub">Explore our 7 featured solutions</div>
+                </button>
+              </div>
+
+              <div className="bottom-video-wrapper">
+                <video className="bottom-video" autoPlay loop muted playsInline>
+                  <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </section>
+          </main>
+
+          {/* Panels */}
+          <Panel title="Daily Events" isOpen={activePanel === 'events'} onClose={() => setActivePanel(null)}>
+            <div className="day-tabs">
+              {dayData.map(day => (
+                <button 
+                  key={day.id} 
+                  className={`day-tab ${activeDay === day.id ? 'active' : ''}`}
+                  onClick={() => setActiveDay(day.id)}
+                >
+                  {day.label}
+                </button>
+              ))}
             </div>
-          )}
-        </main>
+            <div className="events-list">
+              {dayData.find(d => d.id === activeDay).events.map((ev, i) => (
+                <div key={i} className="event-card">
+                  <div className="event-time">{ev.time}</div>
+                  <div className="event-title">{ev.title}</div>
+                  <div className="event-meta">{ev.location}</div>
+                  <div className="event-presenters">{ev.presenters}</div>
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+          <Panel title="Booth Demonstrations" isOpen={activePanel === 'tech'} onClose={() => setActivePanel(null)}>
+            <div className="events-list">
+              {techData.map((tech, i) => (
+                <div key={i} className="event-card">
+                  <div className="event-title" style={{color: '#f25e29'}}>{tech.name}</div>
+                  <div className="event-meta">{tech.summary}</div>
+                  <div className="event-presenters"><strong>Value:</strong> {tech.value}</div>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
       );
     };
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
   </script>
 </body>
 </html>
