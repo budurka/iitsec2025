@@ -18,14 +18,15 @@
       font-style: normal;
     }
 
-    /* --- BASE RESET --- */
+    /* --- RESET & BASE --- */
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; height: 100%; width: 100%; }
+    
     body {
       font-family: "Atkinson Hyperlegible Next", sans-serif;
       background-color: #141417;
       color: #ffffff;
-      overflow: hidden; /* Prevent body scroll */
+      overflow: hidden; /* Prevent default browser scrollbar, we scroll the .kiosk div instead */
     }
 
     /* --- BACKGROUND --- */
@@ -36,38 +37,61 @@
       z-index: -1;
     }
 
-    /* --- MAIN LAYOUT --- */
-    /* Use grid for the main layout to prevent flexbox expansion issues */
-    .kiosk { 
-      display: flex;
-      flex-direction: column;
+    /* --- MAIN SCROLLABLE CONTAINER --- */
+    .kiosk-scroll-wrapper {
       height: 100vh;
       width: 100%;
+      overflow-y: auto; /* ENABLE SCROLLING HERE */
+      -webkit-overflow-scrolling: touch;
       padding: 2vh 5vw;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 2vh;
     }
 
-    /* --- HEADER (Fixed Height Constraint) --- */
+    .kiosk-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem; /* Better spacing between header and tiles */
+      padding-bottom: 4rem; /* Extra space at bottom for scrolling */
+    }
+
+    /* --- HEADER --- */
     .kiosk-header { 
       display: flex; 
       justify-content: space-between; 
-      align-items: center; 
-      width: 100%; 
-      max-width: 1000px; 
-      flex: 0 0 auto; /* Do not grow or shrink */
-      padding: 1rem 0;
+      align-items: flex-start; /* Align top so QR code doesn't drag header down */
+      width: 100%;
+      padding-top: 1rem;
     }
 
-    .header-main { display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
+    .header-left { display: flex; flex-direction: column; gap: 0.8rem; }
     
-    .logo { height: 60px; width: auto; display: block; } /* Reduced slightly for safety */
-    .title-wrap h1 { margin: 0; font-size: 2rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.02em; }
-    .subtitle { margin: 0; font-size: 1rem; opacity: 0.9; font-weight: 400; }
+    /* LOGO FIX */
+    .logo { 
+      height: 50px; /* Fixed height to prevent explosion */
+      width: auto; 
+      display: block; 
+      object-fit: contain;
+      align-self: flex-start;
+    }
 
-    /* --- QR CARD (Strict Size Constraints) --- */
-    .featured-card-rotator { 
+    .title-wrap h1 { 
+      margin: 0; 
+      font-size: 2.2rem; 
+      line-height: 1.1; 
+      text-transform: uppercase; 
+      letter-spacing: 0.02em; 
+    }
+    
+    .subtitle { 
+      margin: 0.5rem 0 0 0; 
+      font-size: 1.1rem; 
+      opacity: 0.9; 
+      font-weight: 400; 
+    }
+
+    /* --- QR CODE CARD --- */
+    .qr-card { 
       background: rgba(12, 12, 16, 0.85); 
       border: 1px solid rgba(255,255,255,0.2); 
       border-radius: 18px; 
@@ -75,55 +99,39 @@
       backdrop-filter: blur(12px); 
       display: flex; 
       align-items: center; 
-      height: auto;
-      flex-shrink: 0; 
+      gap: 1rem;
+      flex-shrink: 0;
     }
     
-    .featured-qr-inline { display: flex; align-items: center; gap: 1rem; }
-    
-    /* CRITICAL FIX: enforce max dimensions on image */
-    .qr-img-small { 
-      width: 100px; 
-      height: 100px; 
-      object-fit: contain;
-      border-radius: 8px; 
+    .qr-img { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 6px; 
       background: #fff; 
       padding: 4px; 
       display: block;
     }
     
-    .qr-caption { margin: 0; font-size: 0.9rem; max-width: 140px; font-weight: 500; line-height: 1.3; }
+    .qr-text { font-size: 0.9rem; max-width: 120px; font-weight: 500; line-height: 1.3; }
 
-    /* --- CONTENT AREA --- */
-    .layout-container { 
-      width: 100%; 
-      max-width: 900px; 
-      flex: 1; /* Take remaining height */
-      display: flex; 
-      flex-direction: column; 
-      justify-content: center; /* Center vertically */
-      gap: 3vh; 
-      min-height: 0; /* Important for flex containers to scroll internally if needed */
-    }
-
+    /* --- TILE GRID --- */
     .tile-grid { 
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5vh; 
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       width: 100%; 
     }
 
     .tile {
       width: 100%; 
       border-radius: 16px; 
-      padding: 1.5rem 2rem; 
+      padding: 1.8rem 2rem; 
       text-align: left; 
       font: inherit; 
       cursor: pointer;
       display: flex; 
       flex-direction: column; 
-      gap: 0.25rem;
-      
+      gap: 0.4rem;
       color: #ffffff; 
       border: 1px solid rgba(255, 255, 255, 0.25); 
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
@@ -136,66 +144,116 @@
     .btn-orange { background: linear-gradient(135deg, rgba(242, 94, 41, 0.96), rgba(250, 138, 8, 0.92)); }
     .btn-purple { background: linear-gradient(135deg, #3600ab, #4d08d9); }
 
-    .tile-label { font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
-    .tile-sub { font-size: 1rem; opacity: 0.95; font-weight: 400; }
+    .tile-label { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+    .tile-sub { font-size: 1.05rem; opacity: 0.95; font-weight: 400; }
 
     /* --- BOTTOM VIDEO --- */
-    .bottom-video-wrapper { 
+    .bottom-video-container { 
       width: 100%; 
       border-radius: 16px; 
       overflow: hidden; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       border: 1px solid rgba(255, 255, 255, 0.15); 
-      flex-shrink: 0;
-      max-height: 25vh; /* Prevent video from pushing everything off */
+      margin-top: 1rem;
     }
     
-    .bottom-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .bottom-video { width: 100%; display: block; }
 
-    /* --- PANELS --- */
-    .panel { position: fixed; inset: 0; display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.7); z-index: 100; opacity: 0; animation: fadeIn 0.2s forwards; }
-    @keyframes fadeIn { to { opacity: 1; } }
-
-    .panel-inner {
+    /* --- PANELS (MODALS) --- */
+    .panel-overlay { 
+      position: fixed; inset: 0; 
+      background: rgba(0,0,0,0.8); 
+      z-index: 100; 
+      display: flex; justify-content: center; align-items: flex-end; 
+      animation: fadeIn 0.2s forwards;
+    }
+    
+    .panel-content {
       background: rgba(20, 20, 23, 0.98); 
       width: 100%; 
       max-width: 1000px; 
-      height: 85vh; 
+      height: 90vh; 
       border-radius: 24px 24px 0 0;
       border: 1px solid rgba(255, 255, 255, 0.2); 
       padding: 2rem; 
       display: flex; 
       flex-direction: column;
       box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
-      transform: translateY(100%); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      transform: translateY(100%); 
+      animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
+
+    @keyframes fadeIn { to { opacity: 1; } }
     @keyframes slideUp { to { transform: translateY(0); } }
 
-    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0; }
-    .panel-header h2 { margin: 0; font-size: 1.6rem; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-shrink: 0; }
+    .panel-header h2 { margin: 0; font-size: 1.8rem; }
     
-    .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 0.5rem 1rem; border-radius: 50px; cursor: pointer; font-size: 1rem; }
+    .btn-close { 
+      background: transparent; 
+      border: 1px solid rgba(255,255,255,0.4); 
+      color: #fff; 
+      padding: 0.5rem 1.2rem; 
+      border-radius: 50px; 
+      cursor: pointer; 
+      font-size: 1rem; 
+    }
 
-    .events-list { flex: 1; overflow-y: auto; padding-right: 0.5rem; -webkit-overflow-scrolling: touch; }
+    .scroll-list { flex: 1; overflow-y: auto; padding-right: 0.5rem; }
     
-    /* Scrollbar styling */
-    .events-list::-webkit-scrollbar { width: 6px; }
-    .events-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-    .events-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    /* --- EVENT CARDS --- */
+    .event-card { 
+      background: rgba(255,255,255,0.06); 
+      border: 1px solid rgba(255,255,255,0.1); 
+      border-radius: 12px; 
+      padding: 1.2rem; 
+      margin-bottom: 1rem; 
+    }
 
-    .event-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem; }
-    .event-time { color: #f25e29; font-weight: 700; margin-bottom: 0.2rem; font-size: 1rem; }
-    .event-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.3; }
+    .event-time { color: #f25e29; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.05rem; }
+    .event-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.3; }
+    .event-meta { opacity: 0.9; font-size: 1rem; margin-bottom: 0.5rem; }
+    .event-presenters { font-size: 0.95rem; opacity: 0.8; line-height: 1.4; }
 
-    .day-tabs { display: flex; gap: 0.8rem; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 5px; flex-shrink: 0; }
-    .day-tab { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 0.5rem 1rem; border-radius: 50px; cursor: pointer; white-space: nowrap; }
+    /* HIGHLIGHT / FEATURED STYLE */
+    .event-card.highlight {
+      border: 2px solid #FA8A08; 
+      background: linear-gradient(to bottom right, rgba(250, 138, 8, 0.15), rgba(20, 20, 23, 0.8));
+      box-shadow: 0 0 20px rgba(250, 138, 8, 0.2);
+      position: relative;
+    }
+
+    .highlight-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #FA8A08;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    /* --- TABS --- */
+    .day-tabs { display: flex; gap: 0.8rem; margin-bottom: 1.2rem; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0; }
+    .day-tab { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 1rem; }
     .day-tab.active { background: #f25e29; border-color: #f25e29; }
 
-    .honoree-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
-    .honoree-card { background: rgba(255,255,255,0.05); border: 1px solid #FA8A08; padding: 1.5rem; text-align: center; border-radius: 12px; position: relative; margin-top: 1rem; }
-    .honoree-photo { width: 140px; height: 140px; border-radius: 50%; border: 3px solid #FA8A08; margin-bottom: 1rem; object-fit: cover; background: #333; }
-    
-    .career-banner { border: 2px solid #FA8A08; background: linear-gradient(to bottom right, rgba(250, 138, 8, 0.15), rgba(20, 20, 23, 0.85)); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; }
+    /* --- HONOREES --- */
+    .honoree-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+    .honoree-card { background: rgba(255,255,255,0.05); border: 1px solid #FA8A08; padding: 2rem 1.5rem; text-align: center; border-radius: 12px; position: relative; margin-top: 10px; }
+    .honoree-photo { width: 150px; height: 150px; border-radius: 50%; border: 3px solid #FA8A08; margin-bottom: 1rem; object-fit: cover; background: #333; }
+    .honoree-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #141417; color: #FA8A08; border: 1px solid #FA8A08; padding: 2px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }
+
+    /* --- CAREER BANNER --- */
+    .career-banner { 
+      border: 2px solid #FA8A08; 
+      background: linear-gradient(to bottom right, rgba(250, 138, 8, 0.15), rgba(20, 20, 23, 0.85)); 
+      padding: 1.5rem; 
+      border-radius: 14px; 
+      margin-bottom: 1.5rem; 
+    }
+    .career-banner h3 { margin: 0 0 0.5rem 0; font-size: 1.4rem; color: #fff; }
+    .career-banner p { margin: 0.3rem 0; font-size: 1.05rem; opacity: 0.95; }
   </style>
 </head>
 <body>
@@ -207,8 +265,8 @@
     // --- DATA ---
     const dayData = [
       { id: "mon", label: "Mon, Dec 1", events: [
-        { time: "10:30 – 12:00 · Room 320A", title: "Tutorial 5: Simulation Building Blocks: Game Engines For Military Use 101", type: "Tutorial", presenters: "Aptima Presenters: Stephanie Fussell, PhD; Summer Rebensky, PhD" },
-        { time: "12:45 – 14:15 · Room 310CD", title: "Tutorial 2: Humans vs. AI – Architecting Compound AI", type: "Tutorial", presenters: "Presenters: Zachary Klinefelter, PhD; Gabriel Ganberg; Summer Rebensky, PhD" }
+        { time: "10:30 – 12:00 · Room 320A", title: "Tutorial 5: Simulation Building Blocks", type: "Tutorial", presenters: "Aptima Presenters: Stephanie Fussell, PhD; Summer Rebensky, PhD" },
+        { time: "12:45 – 14:15 · Room 310CD", title: "Tutorial 2: Humans vs. AI", type: "Tutorial", presenters: "Zachary Klinefelter, PhD; Gabriel Ganberg; Summer Rebensky, PhD" }
       ]},
       { id: "tue", label: "Tue, Dec 2", events: [
         { time: "13:15 – 14:30 · Exhibit Hall", title: "Wargaming Panel – AI's Impact in M&S", type: "Panel", presenters: "Panelist: Svitlana Volkova, PhD" },
@@ -218,7 +276,8 @@
         { time: "08:30 – 10:00 · Room 320B", title: "Paper Session: Innovating Talent Strategies", type: "Paper Session", presenters: "Paper: Competency Modeling in the USSF · Julia Brown" },
         { time: "08:30 – 10:00 · Room 320F", title: "Paper Session: Training Strategies", type: "Paper Session", presenters: "Aptima Contributors: Samantha Emerson, PhD; Mark Schroeder-Strong, PhD" },
         { time: "10:30 – 12:00 · Room 320G", title: "Paper Session: Cognitive Crossroads", type: "Paper Session", presenters: "Aptima Contributors: Laura Cassani; Michael Davinroy; Tatiana Toumbeva, PhD" },
-        { time: "13:00 – 16:00 · Room 210A", title: "NTSA Career Fair at I/ITSEC", type: "Career Fair", presenters: "Bella Perault – People Operations Generalist", highlight: true }
+        { time: "13:00 – 16:00 · Room 210A", title: "NTSA Career Fair at I/ITSEC", type: "Career Fair", presenters: "Bella Perault – People Operations Generalist", highlight: true },
+        { time: "13:30 – 15:00 · Room 320A", title: "Paper Session: The AI Playbook", type: "Paper Session", presenters: "Paper: AI-Driven Generative Models · William Dupree, PhD; Svitlana Volkova, PhD" }
       ]},
       { id: "thu", label: "Thu, Dec 4", events: [
         { time: "08:30 – 10:00 · Dest. Lounge", title: "Speaker Session: The Next Big Thing – Wearables", type: "Speaker Session", presenters: "Speaker: Sylvain Bruni" }
@@ -254,175 +313,216 @@
       { role: "Human Performance Committee", name: "Stephanie Fussell, PhD; Summer Rebensky, PhD" }
     ];
 
-    // --- COMPONENTS ---
-    const Panel = ({ title, isOpen, onClose, children }) => {
-      if (!isOpen) return null;
-      return (
-        <div className="panel" onClick={onClose}>
-          <div className="panel-inner" onClick={e => e.stopPropagation()}>
-            <div className="panel-header">
-              <h2>{title}</h2>
-              <button className="btn-ghost" onClick={onClose}>Close ✕</button>
-            </div>
-            {children}
-          </div>
-        </div>
-      );
-    };
-
+    // --- MAIN COMPONENT ---
     const App = () => {
       const [activePanel, setActivePanel] = useState(null);
       const [activeDay, setActiveDay] = useState("mon");
 
+      // Auto-close Idle Timer (60s)
       useEffect(() => {
         let timer;
         const reset = () => { clearTimeout(timer); timer = setTimeout(() => setActivePanel(null), 60000); };
-        window.addEventListener('mousedown', reset);
-        window.addEventListener('touchstart', reset);
+        ['mousedown', 'touchstart', 'scroll', 'click'].forEach(evt => window.addEventListener(evt, reset));
         reset();
-        return () => {
-          window.removeEventListener('mousedown', reset);
-          window.removeEventListener('touchstart', reset);
-        };
+        return () => ['mousedown', 'touchstart', 'scroll', 'click'].forEach(evt => window.removeEventListener(evt, reset));
       }, [activePanel]);
+
+      // Handle Panel Opening
+      const openPanel = (id) => setActivePanel(id);
+      const closePanel = () => setActivePanel(null);
 
       return (
         <div className="kiosk-app">
+          {/* Background Video */}
           <video id="bg-video" autoPlay muted loop playsInline>
             <source src="background.mp4" type="video/mp4" />
           </video>
           <div className="overlay"></div>
 
-          <main className="kiosk">
-            <header className="kiosk-header">
-              <div className="header-main">
-                <img src="aptima-logo-reversed.png" alt="Aptima logo" className="logo" />
-                <div className="title-wrap">
-                  <h1>APTIMA @ I/ITSEC</h1>
-                  <p className="subtitle">Explore our events, solutions, and opportunities.</p>
-                </div>
-              </div>
-              <div className="featured-card-rotator">
-                <div className="featured-qr-inline">
-                  <img src="qr-aptima-website.jpeg" alt="QR" className="qr-img-small" />
-                  <div className="qr-text-col">
-                    <p className="qr-caption">Scan to learn more about Aptima.</p>
+          {/* Main Content - SCROLLABLE WRAPPER */}
+          <div className="kiosk-scroll-wrapper">
+            <main className="kiosk-content">
+              
+              <header className="kiosk-header">
+                <div className="header-left">
+                  <img src="aptima-logo-reversed.png" alt="Aptima logo" className="logo" />
+                  <div className="title-wrap">
+                    <h1>APTIMA @ I/ITSEC</h1>
+                    <p className="subtitle">Explore our events, solutions, and opportunities.</p>
                   </div>
                 </div>
-              </div>
-            </header>
+                
+                <div className="qr-card">
+                  <img src="qr-aptima-website.jpeg" alt="Scan QR" className="qr-img" />
+                  <div className="qr-text">Scan to learn more about Aptima.</div>
+                </div>
+              </header>
 
-            <section className="layout-container">
               <div className="tile-grid">
-                <button className="tile btn-orange" onClick={() => setActivePanel('events')}>
+                <button className="tile btn-orange" onClick={() => openPanel('events')}>
                   <div className="tile-label">Daily Events</div>
                   <div className="tile-sub">See Aptima's 2025 Papers & Events</div>
                 </button>
 
-                <button className="tile btn-purple" onClick={() => setActivePanel('tech')}>
+                <button className="tile btn-purple" onClick={() => openPanel('tech')}>
                   <div className="tile-label">Booth Demonstrations</div>
                   <div className="tile-sub">Explore our 7 featured solutions</div>
                 </button>
 
-                <button className="tile btn-purple" onClick={() => setActivePanel('intern')}>
+                <button className="tile btn-purple" onClick={() => openPanel('intern')}>
                   <div className="tile-label">2026 Internship Opportunities</div>
                   <div className="tile-sub">Preview open roles for next summer</div>
                 </button>
 
-                <button className="tile btn-purple" onClick={() => setActivePanel('u40')}>
+                <button className="tile btn-purple" onClick={() => openPanel('u40')}>
                   <div className="tile-label">NTSA Top Under 40 Awardees</div>
                   <div className="tile-sub">Celebrate Aptima’s I/ITSEC 2025 awardees</div>
                 </button>
 
-                <button className="tile btn-purple" onClick={() => setActivePanel('board')}>
+                <button className="tile btn-purple" onClick={() => openPanel('board')}>
                   <div className="tile-label">I/ITSEC Volunteers</div>
                   <div className="tile-sub">Recognizing Aptima’s commitment</div>
                 </button>
               </div>
 
-              <div className="bottom-video-wrapper">
+              <div className="bottom-video-container">
                 <video className="bottom-video" autoPlay loop muted playsInline>
                   <source src="Aptima Intro-Promo Oct 2025.mp4" type="video/mp4" />
                 </video>
               </div>
-            </section>
-          </main>
 
-          {/* EVENTS PANEL */}
-          <Panel title="Daily Events" isOpen={activePanel === 'events'} onClose={() => setActivePanel(null)}>
-            <div className="day-tabs">
-              {dayData.map(d => (
-                <button key={d.id} className={`day-tab ${activeDay === d.id ? 'active' : ''}`} onClick={() => setActiveDay(d.id)}>{d.label}</button>
-              ))}
-            </div>
-            <div className="events-list">
-              {dayData.find(d => d.id === activeDay).events.map((e, i) => (
-                <div key={i} className="event-card">
-                  <div className="event-time">{e.time}</div>
-                  <div className="event-title">{e.title}</div>
-                  <div style={{opacity:0.9, fontSize:'0.95rem'}}>{e.presenters}</div>
-                </div>
-              ))}
-            </div>
-          </Panel>
+            </main>
+          </div>
 
-          {/* TECH PANEL */}
-          <Panel title="Booth Demonstrations" isOpen={activePanel === 'tech'} onClose={() => setActivePanel(null)}>
-            <div className="events-list">
-              {techData.map((t, i) => (
-                <div key={i} className="event-card">
-                  <div className="event-title" style={{color:'#f25e29'}}>{t.name}</div>
-                  <div style={{fontWeight:'500', marginBottom:'0.5rem'}}>{t.summary}</div>
-                  <div style={{fontSize:'0.95rem', opacity:0.8}}>{t.details}</div>
+          {/* --- PANELS --- */}
+          
+          {/* DAILY EVENTS */}
+          {activePanel === 'events' && (
+            <div className="panel-overlay" onClick={closePanel}>
+              <div className="panel-content" onClick={e => e.stopPropagation()}>
+                <div className="panel-header">
+                  <h2>Daily Events</h2>
+                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
                 </div>
-              ))}
+                <div className="day-tabs">
+                  {dayData.map(d => (
+                    <button 
+                      key={d.id} 
+                      className={`day-tab ${activeDay === d.id ? 'active' : ''}`} 
+                      onClick={() => setActiveDay(d.id)}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="scroll-list">
+                  {dayData.find(d => d.id === activeDay).events.map((e, i) => (
+                    <div key={i} className={`event-card ${e.highlight ? 'highlight' : ''}`}>
+                      {e.highlight && <div className="highlight-badge">★ Featured Event</div>}
+                      <div className="event-time">{e.time}</div>
+                      <div className="event-title">{e.title}</div>
+                      <div className="event-meta">{e.type}</div>
+                      <div className="event-presenters">{e.presenters}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </Panel>
+          )}
 
-          {/* INTERN PANEL */}
-          <Panel title="2026 Internship Opportunities" isOpen={activePanel === 'intern'} onClose={() => setActivePanel(null)}>
-            <div className="career-banner">
-              <h3 style={{margin:'0 0 0.5rem 0', fontSize:'1.3rem'}}>NTSA Career Fair at I/ITSEC</h3>
-              <p style={{margin:'0.2rem 0'}}><strong>13:00 – 16:00 • Room 210A</strong></p>
-              <p style={{margin:'0'}}>Meet Bella Perault to learn about Aptima’s 2026 internships.</p>
-            </div>
-            <div className="events-list">
-              {internRoles.map((role, i) => (
-                <div key={i} className="event-card">
-                  <div className="event-time" style={{color:'#fff', opacity:0.7, fontWeight:'400'}}>{role.division}</div>
-                  <div className="event-title">{role.title}</div>
-                  <div style={{fontSize:'0.9rem', marginBottom:'0.5rem', color:'#f25e29'}}>{role.location}</div>
-                  <div style={{fontSize:'0.9rem', opacity:0.9}}>{role.summary}</div>
+          {/* TECH DEMOS */}
+          {activePanel === 'tech' && (
+            <div className="panel-overlay" onClick={closePanel}>
+              <div className="panel-content" onClick={e => e.stopPropagation()}>
+                <div className="panel-header">
+                  <h2>Booth Demonstrations</h2>
+                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
                 </div>
-              ))}
+                <div className="scroll-list">
+                  {techData.map((t, i) => (
+                    <div key={i} className="event-card">
+                      <div className="event-title" style={{color: '#f25e29'}}>{t.name}</div>
+                      <div style={{fontWeight:'600', marginBottom:'0.5rem'}}>{t.summary}</div>
+                      <div className="event-presenters">{t.details}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </Panel>
+          )}
 
-          {/* UNDER 40 PANEL */}
-          <Panel title="NTSA Top Under 40 Awardees" isOpen={activePanel === 'u40'} onClose={() => setActivePanel(null)}>
-            <div className="honoree-grid">
-              {under40.map((u, i) => (
-                <div key={i} className="honoree-card">
-                   <div style={{position:'absolute', top:'-12px', left:'50%', transform:'translateX(-50%)', background:'#141417', color:'#FA8A08', border:'1px solid #FA8A08', padding:'2px 10px', borderRadius:'50px', fontSize:'0.75rem', fontWeight:'800', width:'max-content'}}>★ 2025 HONOREE ★</div>
-                   <img src={u.photo} alt={u.name} className="honoree-photo" />
-                   <div className="event-title" style={{color:'#FA8A08', fontSize:'1.4rem'}}>{u.name}</div>
-                   <div style={{fontSize:'0.9rem', lineHeight:'1.5', opacity:0.9}}>{u.blurb}</div>
+          {/* INTERNSHIPS */}
+          {activePanel === 'intern' && (
+            <div className="panel-overlay" onClick={closePanel}>
+              <div className="panel-content" onClick={e => e.stopPropagation()}>
+                <div className="panel-header">
+                  <h2>2026 Internship Opportunities</h2>
+                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
                 </div>
-              ))}
+                <div className="career-banner">
+                  <div className="highlight-badge">★ JOIN US!</div>
+                  <h3>NTSA Career Fair at I/ITSEC</h3>
+                  <p><strong>13:00 – 16:00 • Room 210A</strong></p>
+                  <p>Meet Bella Perault to learn about Aptima’s 2026 internships.</p>
+                </div>
+                <div className="scroll-list">
+                  {internRoles.map((role, i) => (
+                    <div key={i} className="event-card">
+                      <div className="event-time" style={{color:'#fff', opacity:0.7, fontWeight:'400'}}>{role.division}</div>
+                      <div className="event-title">{role.title}</div>
+                      <div style={{color:'#f25e29', fontSize:'0.9rem', marginBottom:'0.4rem'}}>{role.location}</div>
+                      <div className="event-presenters">{role.summary}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </Panel>
+          )}
 
-          {/* BOARD PANEL */}
-          <Panel title="I/ITSEC Volunteers" isOpen={activePanel === 'board'} onClose={() => setActivePanel(null)}>
-            <div className="events-list">
-              {boardMentions.map((b, i) => (
-                <div key={i} className="event-card">
-                  <div className="event-title" style={{fontSize:'1.1rem'}}>{b.role}</div>
-                  <div style={{color:'#f25e29', fontWeight:'700', fontSize:'1.1rem'}}>{b.name}</div>
+          {/* UNDER 40 */}
+          {activePanel === 'u40' && (
+            <div className="panel-overlay" onClick={closePanel}>
+              <div className="panel-content" onClick={e => e.stopPropagation()}>
+                <div className="panel-header">
+                  <h2>NTSA Top Under 40 Awardees</h2>
+                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
                 </div>
-              ))}
+                <div className="scroll-list">
+                  <div className="honoree-grid">
+                    {under40.map((u, i) => (
+                      <div key={i} className="honoree-card">
+                        <div className="honoree-badge">★ 2025 HONOREE ★</div>
+                        <img src={u.photo} alt={u.name} className="honoree-photo" />
+                        <div className="event-title" style={{color:'#FA8A08', fontSize:'1.4rem'}}>{u.name}</div>
+                        <div className="event-presenters">{u.blurb}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          </Panel>
+          )}
+
+          {/* VOLUNTEERS */}
+          {activePanel === 'board' && (
+            <div className="panel-overlay" onClick={closePanel}>
+              <div className="panel-content" onClick={e => e.stopPropagation()}>
+                <div className="panel-header">
+                  <h2>I/ITSEC Volunteers</h2>
+                  <button className="btn-close" onClick={closePanel}>Close ✕</button>
+                </div>
+                <div className="scroll-list">
+                  {boardMentions.map((b, i) => (
+                    <div key={i} className="event-card">
+                      <div className="event-meta" style={{opacity:1, fontSize:'1.1rem'}}>{b.role}</div>
+                      <div className="event-title" style={{color:'#f25e29', fontSize:'1.2rem'}}>{b.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       );
     };
